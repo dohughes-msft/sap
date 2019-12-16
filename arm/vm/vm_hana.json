@@ -59,7 +59,7 @@
         }
     },
     "variables": {
-        "repoPath": "https://github.com/dohughes-msft/sap/blob/master/arm/disk/",
+        "repoPath": "https://raw.githubusercontent.com/dohughes-msft/sap/master/arm/disk/",
         "location": "[resourceGroup().location]",
         "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
         "ppgName": "[concat(variables('label'), '-ppg1')]",

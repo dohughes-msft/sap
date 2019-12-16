@@ -355,8 +355,6 @@
                     "copy": [
                         {
                             "name": "dataDisks",
-//                            "count": "[length(reference(variables('diskDeploymentName')).outputs.diskArray.value)]",
-// we can't use reference here since the count value is parsed before deploying anything
                             "count": "[variables('vmDiskTemplate')[parameters('vmSize')][parameters('role')].diskCount]",
                             "input": {
                                 "lun": "[reference(variables('diskDeploymentName')).outputs.diskArray.value[copyIndex('dataDisks')].lun]",

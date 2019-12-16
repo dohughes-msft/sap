@@ -59,7 +59,7 @@
         }
     },
     "variables": {
-        "repoPath": "https://sapsa1.z5.web.core.windows.net/",
+        "repoPath": "https://github.com/dohughes-msft/sap/blob/master/arm/disk/",
         "location": "[resourceGroup().location]",
         "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
         "ppgName": "[concat(variables('label'), '-ppg1')]",

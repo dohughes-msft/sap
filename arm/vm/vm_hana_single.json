@@ -56,6 +56,13 @@
                 "Production",
                 "Non-production"
             ]
+        },
+        "cluster": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Should two identical nodes be deployed."
+            }
         }
     },
     "variables": {
@@ -63,7 +70,7 @@
         "location": "[resourceGroup().location]",
         "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
         "ppgName": "[concat(variables('label'), '-ppg1')]",
-        "avsetName": "[concat(variables('label'), '-avset1')]",
+        "avsetName": "[concat(variables('label'), '-db-avset1')]",
         "hostName": "[concat(variables('label'), '-db1')]",
         "nicName": "[concat(variables('hostName'), '-nic1')]",
         "pipName": "[concat(variables('hostName'), '-pip1')]",
@@ -396,27 +403,27 @@
         }
     ],
     "outputs": {
-        "resourceGroup": {
+        "Resource group": {
             "type": "string",
             "value": "[resourceGroup().name]"
         },
-        "vmName": {
+        "VM name": {
             "type": "string",
             "value": "[variables('hostName')]"
         },
-        "ppgName": {
+        "PPG name": {
             "type": "string",
             "value": "[variables('ppgName')]"
         },
-        "avsetName": {
+        "AvSet name": {
             "type": "string",
             "value": "[variables('avsetName')]"
         },
-        "role": {
+        "Role": {
             "type": "string",
             "value": "[parameters('role')]"
         },
-        "numberOfDataDisks": {
+        "Number of data disks": {
             "type": "int",
             "value": "[variables('vmDiskTemplate')[parameters('vmSize')][parameters('role')].diskCount]"
         }

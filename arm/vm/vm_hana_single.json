@@ -55,13 +55,9 @@
             "allowedValues": [
                 "Production",
                 "Non-production"
-            ]
-        },
-        "cluster": {
-            "type": "bool",
-            "defaultValue": false,
+            ],
             "metadata": {
-                "description": "Should two identical nodes be deployed."
+                "description": "This will affect the storage SKUs used."
             }
         }
     },

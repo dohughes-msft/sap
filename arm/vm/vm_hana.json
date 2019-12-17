@@ -417,7 +417,7 @@
             "value": "[parameters('role')]"
         },
         "numberOfDataDisks": {
-            "type": "integer",
+            "type": "int",
             "value": "[variables('vmDiskTemplate')[parameters('vmSize')][parameters('role')].diskCount]"
         }
     }

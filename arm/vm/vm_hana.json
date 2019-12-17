@@ -395,5 +395,30 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "resourceGroup": {
+            "type": "string",
+            "value": "[resourceGroup().name]"
+        },
+        "vmName": {
+            "type": "string",
+            "value": "[variables('hostName')]"
+        },
+        "ppgName": {
+            "type": "string",
+            "value": "[variables('ppgName')]"
+        },
+        "avsetName": {
+            "type": "string",
+            "value": "[variables('avsetName')]"
+        },
+        "role": {
+            "type": "string",
+            "value": "[parameters('role')]"
+        },
+        "numberOfDataDisks": {
+            "type": "string",
+            "value": "[variables('vmDiskTemplate')[parameters('vmSize')][parameters('role')].diskCount]"
+        }
+    }
 }

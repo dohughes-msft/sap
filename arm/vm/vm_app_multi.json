@@ -13,14 +13,14 @@
         },
         "vnet": {
             "type": "string",
-            "defaultValue": "armvnet3",
+            "defaultValue": "sap-prod-vnet-1",
             "metadata": {
                 "description": "Virtual network."
             }
         },
         "subnet": {
             "type": "string",
-            "defaultValue": "subnet-1",
+            "defaultValue": "sap-app-subnet",
             "metadata": {
                 "description": "Subnet."
             }

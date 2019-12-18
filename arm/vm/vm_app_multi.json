@@ -128,6 +128,7 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-09-01",
+            "condition": "[parameters('publicIp')]",
             "name": "[concat(variables('label'), '-app', copyIndex(1), '-pip1')]",
             "location": "[variables('location')]",
             "dependsOn": [],
@@ -188,9 +189,7 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', concat(variables('label'), '-app', copyIndex(1), '-pip1'))]"
-                                },
+                            "publicIPAddress": "[if(parameters('publicIp'), json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-app', copyIndex(1), '-pip1')), '\"}')), json('null'))]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                                 },

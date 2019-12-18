@@ -25,6 +25,13 @@
                 "description": "Subnet."
             }
         },
+        "publicIp": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Should a public IP address be deployed."
+            }
+        },
         "vmSize": {
             "type": "string",
             "allowedValues": [
@@ -114,6 +121,7 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-09-01",
+            "condition": "[parameters('publicIp')]",
             "name": "[variables('pipName')]",
             "location": "[variables('location')]",
             "dependsOn": [],

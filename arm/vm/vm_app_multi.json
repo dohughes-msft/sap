@@ -34,6 +34,10 @@
         },
         "publicIp": {
             "type": "bool",
+            "allowedValues": [
+                true,
+                false
+            ],
             "defaultValue": false,
             "metadata": {
                 "description": "Should a public IP address be deployed."

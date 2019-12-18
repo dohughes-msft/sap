@@ -63,6 +63,7 @@
                 "Standard_M416s_v2",
                 "Standard_M416ms_v2"
             ],
+            "defaultValue": "Standard_D4s_v3",
             "metadata": {
                 "description": "Virtual machine size."
             }

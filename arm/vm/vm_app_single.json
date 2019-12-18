@@ -25,6 +25,13 @@
                 "description": "Subnet."
             }
         },
+        "networkSecurityGroup": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Network security group to apply to the NIC. Leave blank if none."
+            }
+        },
         "publicIp": {
             "type": "bool",
             "defaultValue": false,
@@ -108,6 +115,9 @@
         },
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
+        "nsgId": {
+            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+        },
         "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"   
     },
     "resources": [
@@ -186,6 +196,7 @@
                         }
                     }
                 ],
+                "networkSecurityGroup": "[if(empty(parameters('networkSecurityGroup')), json('null'), variables('nsgId'))]",
                 "enableAcceleratedNetworking": true
             }
         },

@@ -102,9 +102,12 @@
         "hostName": "[concat(variables('label'), '-app1')]",
         "nicName": "[concat(variables('hostName'), '-nic1')]",
         "pipName": "[concat(variables('hostName'), '-pip1')]",
+        "pipId": {
+            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+        },
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
-        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"   
     },
     "resources": [
         {
@@ -174,9 +177,7 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('pipName'))]"
-                                },
+                            "publicIPAddress": "[if(parameters('publicIp'), variables('pipId') , json('null'))]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                                 },

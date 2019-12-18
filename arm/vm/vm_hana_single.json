@@ -25,6 +25,13 @@
                 "description": "Subnet."
             }
         },
+        "publicIp": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Should a public IP address be deployed."
+            }
+        },
         "vmSize": {
             "type": "string",
             "allowedValues": [
@@ -45,6 +52,7 @@
                 "Standard_M416s_v2",
                 "Standard_M416ms_v2"
             ],
+            "defaultValue": "Standard_E16s_v3",
             "metadata": {
                 "description": "Virtual machine size. Also determines which disks will be attached."
             }
@@ -70,6 +78,9 @@
         "hostName": "[concat(variables('label'), '-db1')]",
         "nicName": "[concat(variables('hostName'), '-nic1')]",
         "pipName": "[concat(variables('hostName'), '-pip1')]",
+        "pipId": {
+            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', variables('pipName'))]"
+        },
         "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
         "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
@@ -232,6 +243,7 @@
         {
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-09-01",
+            "condition": "[parameters('publicIp')]",
             "name": "[variables('pipName')]",
             "location": "[variables('location')]",
             "dependsOn": [],
@@ -284,9 +296,7 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('pipName'))]"
-                                },
+                            "publicIPAddress": "[if(parameters('publicIp'), variables('pipId') , json('null'))]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                                 },

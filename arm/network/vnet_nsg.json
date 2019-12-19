@@ -116,8 +116,8 @@
                 "enableDdosProtection": false,
                 "enableVmProtection": false
             }
-        },
-        {
+        }
+/*        {
             "type": "Microsoft.Network/networkSecurityGroups/securityRules",
             "apiVersion": "2019-09-01",
             "name": "[concat(parameters('networkSecurityGroupName'), '/allow-ssh')]",
@@ -138,6 +138,6 @@
                 "sourceAddressPrefixes": [],
                 "destinationAddressPrefixes": []
             }
-        }
+        } */
     ]
 }

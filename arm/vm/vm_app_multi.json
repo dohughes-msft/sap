@@ -57,11 +57,12 @@
             "type": "string",
             "allowedValues": [
                 "AppServer",
-                "ASCS"
+                "ASCS",
+                "NFS"
             ],
             "defaultValue": "AppServer",
             "metadata": {
-                "description": "Application server or ASCS server. Affect the hostname. ASCS will have no data disk."
+                "description": "Application server, NFS server or ASCS server. Affects the hostname. ASCS will have no data disk."
             }
         },
         "vmSize": {
@@ -108,11 +109,12 @@
                 128,
                 256,
                 512,
-                1024
+                1024,
+                2048
             ],
             "defaultValue": 128,
             "metadata": {
-                "description": "Size of the data disk, e.g. for /usr/sap/SID. Only for application servers."
+                "description": "Size of the data disk, e.g. for /usr/sap/SID. Only for application and NFS servers."
             }
         },
         "role": {
@@ -139,9 +141,9 @@
     "variables": {
         "location": "[resourceGroup().location]",
         "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
-        "ppgName": "[concat(variables('label'), '-ppg1')]",
-        "useCase": "[if(equals(parameters('useCase'), 'AppServer'), '-app', '-ascs')]",
-        "avsetName": "[concat(variables('label'), variables('useCase'), '-avset1')]",
+        "ppgName": "[concat(variables('label'), '-ppg')]",
+        "useCase": "[if(equals(parameters('useCase'), 'AppServer'), '-app', if(equals(parameters('useCase'), 'ASCS'), '-ascs', '-nfs'))]",
+        "avsetName": "[concat(variables('label'), variables('useCase'), '-avset')]",
         "vnetRg": "[if(empty(parameters('vnetRg')), resourceGroup().name, parameters('vnetRg'))]",
         "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
@@ -286,7 +288,7 @@
                     "dataDisks": "[if(equals(parameters('useCase'), 'ASCS'), json('null'), json(concat('[
                         {
                             \"lun\": 0,
-                            \"name\": \"', variables('label'), '-app', copyIndex(1), '-data-disk1', '\",
+                            \"name\": \"', variables('label'), variables('useCase'), copyIndex(1), '-data-disk1', '\",
                             \"createOption\": \"empty\",
                             \"caching\": \"ReadWrite\",
                             \"diskSizeGb\": \"', parameters('dataDiskSize'), '\",

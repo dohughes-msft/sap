@@ -9,11 +9,11 @@ Disk configurations for SAP HANA are based on the Microsoft recommended layouts 
 
 https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/hana-vm-operations-storage
 
-# Deploy a virtual network, subnets and security group
+# Deploy a virtual network, subnets and a single network security group
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fnetwork%2Fvnet_nsg.json)
 
 # Deploy HANA VMs to Azure (single or cluster)
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fvm%2Fvm_hana_multi.json)
 
-# Deploy application server VMs to Azure (single or multiple)
+# Deploy NFS, ASCS or application server VMs to Azure (single or multiple)
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fvm%2Fvm_app_multi.json)

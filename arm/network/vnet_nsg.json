@@ -32,7 +32,7 @@
         },
         "appSubnetName": {
             "type": "string",
-            "defaultValue": "sap-db-subnet",
+            "defaultValue": "sap-app-subnet",
             "metadata": {
                 "description": "Name of the application subnet."
             }

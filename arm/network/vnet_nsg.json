@@ -16,25 +16,39 @@
                 "description": "Address space of the virtual network."
             }
         },
-        "subnetName": {
+        "dbSubnetName": {
             "type": "string",
             "defaultValue": "sap-db-subnet",
             "metadata": {
-                "description": "Name of the first subnet."
+                "description": "Name of the database subnet."
             }
         },
-        "subnetAddressSpace": {
+        "dbSubnetAddressSpace": {
             "type": "string",
             "defaultValue": "10.0.0.0/24",
             "metadata": {
-                "description": "Address space of the first subnet."
+                "description": "Address space of the database subnet."
+            }
+        },
+        "appSubnetName": {
+            "type": "string",
+            "defaultValue": "sap-db-subnet",
+            "metadata": {
+                "description": "Name of the application subnet."
+            }
+        },
+        "appSubnetAddressSpace": {
+            "type": "string",
+            "defaultValue": "10.0.0.0/24",
+            "metadata": {
+                "description": "Address space of the application subnet."
             }
         },
         "networkSecurityGroupName": {
             "type": "String",
             "defaultValue": "sap-nsg",
             "metadata": {
-                "description": "Name of the first subnet."
+                "description": "Name of the network security group."
             }
         }
     },
@@ -80,9 +94,18 @@
                 },
                 "subnets": [
                     {
-                        "name": "[parameters('subnetName')]",
+                        "name": "[parameters('dbSubnetName')]",
                         "properties": {
-                            "addressPrefix": "[parameters('subnetAddressSpace')]",
+                            "addressPrefix": "[parameters('dbSubnetAddressSpace')]",
+                            "delegations": [],
+                            "privateEndpointNetworkPolicies": "Enabled",
+                            "privateLinkServiceNetworkPolicies": "Enabled"
+                        }
+                    },
+                    {
+                        "name": "[parameters('appSubnetName')]",
+                        "properties": {
+                            "addressPrefix": "[parameters('appSubnetAddressSpace')]",
                             "delegations": [],
                             "privateEndpointNetworkPolicies": "Enabled",
                             "privateLinkServiceNetworkPolicies": "Enabled"

@@ -2,8 +2,8 @@
 Templates for deployment of SAP systems. Before starting, you need to create:
 
 * Resource group in the location where the resources will be deployed
-* Virtual network and subnet
-* Network security group (if used)
+* Virtual network, subnet, and resource group containing them
+* Network security group (if used), and resource group containing it
 
 Disk configurations for SAP HANA are based on the Microsoft recommended layouts at:
 

@@ -11,6 +11,13 @@
                 "description": "The SAP system ID."
             }
         },
+        "vnetRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the virtual network. Leave blank if same as the current resource group."
+            }
+        },
         "vnet": {
             "type": "string",
             "defaultValue": "sap-prod-vnet-1",
@@ -23,6 +30,13 @@
             "defaultValue": "sap-app-subnet",
             "metadata": {
                 "description": "Subnet."
+            }
+        },
+        "nsgRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the network security group. Leave blank if same as the current resource group."
             }
         },
         "networkSecurityGroup": {
@@ -116,10 +130,12 @@
         "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
         "ppgName": "[concat(variables('label'), '-ppg1')]",
         "avsetName": "[concat(variables('label'), '-app-avset1')]",
-        "vnetId": "[resourceId(resourceGroup().name, 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
+        "vnetRg": "[if(empty(parameters('vnetRg')), resourceGroup().name, parameters('vnetRg'))]",
+        "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
+        "nsgRg": "[if(empty(parameters('nsgRg')), resourceGroup().name, parameters('nsgRg'))]",
         "nsgId": {
-            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+            "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
         "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"
     },

@@ -335,7 +335,10 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(parameters('publicIp'), json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex(1), '-pip1')), '\"}')), json('null'))]",
+                            "publicIPAddress": "[if(not(parameters('publicIp')), json('null'), json(concat('
+                                {
+                                    \"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex(1), '-pip1')), '\"
+                                }')))]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                                 },

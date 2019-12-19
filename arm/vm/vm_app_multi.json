@@ -53,6 +53,17 @@
                 "description": "Should a public IP address be deployed."
             }
         },
+        "useCase": {
+            "type": "string",
+            "allowedValues": [
+                "AppServer",
+                "ASCS"
+            ],
+            "defaultValue": "AppServer",
+            "metadata": {
+                "description": "Application server or ASCS server. Affect the hostname. ASCS will have no data disk."
+            }
+        },
         "vmSize": {
             "type": "string",
             "allowedValues": [
@@ -101,7 +112,7 @@
             ],
             "defaultValue": 128,
             "metadata": {
-                "description": "Size of the data disk, e.g. for /usr/sap/SID."
+                "description": "Size of the data disk, e.g. for /usr/sap/SID. Only for application servers."
             }
         },
         "role": {
@@ -129,7 +140,8 @@
         "location": "[resourceGroup().location]",
         "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
         "ppgName": "[concat(variables('label'), '-ppg1')]",
-        "avsetName": "[concat(variables('label'), '-app-avset1')]",
+        "useCase": "[if(equals(parameters('useCase'), 'AppServer'), '-app', '-ascs')]",
+        "avsetName": "[concat(variables('label'), variables('useCase'), '-avset1')]",
         "vnetRg": "[if(empty(parameters('vnetRg')), resourceGroup().name, parameters('vnetRg'))]",
         "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
@@ -137,7 +149,7 @@
         "nsgId": {
             "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
-        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"          
     },
     "resources": [
         {
@@ -155,7 +167,7 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-09-01",
             "condition": "[parameters('publicIp')]",
-            "name": "[concat(variables('label'), '-app', copyIndex(1), '-pip1')]",
+            "name": "[concat(variables('label'), variables('useCase'), copyIndex(1), '-pip1')]",
             "location": "[variables('location')]",
             "dependsOn": [],
             "sku": {
@@ -170,8 +182,8 @@
                 "publicIPAllocationMethod": "Static",
                 "idleTimeoutInMinutes": 4,
                 "dnsSettings": {
-                    "domainNameLabel": "[concat(variables('label'), '-app', copyIndex(1))]",
-                    "fqdn": "[concat(variables('label'), '-app', copyIndex(1), '.', variables('location'), '.cloudapp.azure.com')]"
+                    "domainNameLabel": "[concat(variables('label'), variables('useCase'), copyIndex(1))]",
+                    "fqdn": "[concat(variables('label'), variables('useCase'), copyIndex(1), '.', variables('location'), '.cloudapp.azure.com')]"
                 },
                 "ipTags": []
             }
@@ -199,10 +211,10 @@
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "name": "[concat(variables('label'), '-app', copyIndex(1), '-nic1')]",
+            "name": "[concat(variables('label'), variables('useCase'), copyIndex(1), '-nic1')]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[concat(variables('label'), '-app', copyIndex(1), '-pip1')]"
+                "[concat(variables('label'), variables('useCase'), copyIndex(1), '-pip1')]"
             ],
             "copy": {
                 "count": "[parameters('quantity')]",
@@ -215,7 +227,10 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(parameters('publicIp'), json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-app', copyIndex(1), '-pip1')), '\"}')), json('null'))]",
+                            "publicIPAddress": "[if(not(parameters('publicIp')), json('null'), json(concat('
+                                {
+                                    \"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), variables('useCase'), copyIndex(1), '-pip1')), '\"
+                                }')))]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                                 },
@@ -230,10 +245,10 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
-            "name": "[concat(variables('label'), '-app', copyIndex(1))]",
+            "name": "[concat(variables('label'), variables('useCase'), copyIndex(1))]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[concat(variables('label'), '-app', copyIndex(1), '-nic1')]",
+                "[concat(variables('label'), variables('useCase'), copyIndex(1), '-nic1')]",
                 "[variables('avsetName')]"
             ],
             "tags": {},
@@ -248,14 +263,14 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), '-app', copyIndex(1), '-nic1'))]"
+                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), variables('useCase'), copyIndex(1), '-nic1'))]"
                         }
                     ]
                 },
                 "storageProfile": {
                     "osDisk": {
                         "createOption": "fromImage",
-                        "name": "[concat(variables('label'), '-app', copyIndex(1), '-os-disk1')]",
+                        "name": "[concat(variables('label'), variables('useCase'), copyIndex(1), '-os-disk1')]",
                         "caching": "ReadWrite",
                         "managedDisk": {
                             "storageAccountType": "[variables('storageSku')]"
@@ -268,25 +283,25 @@
                         "sku": "12-sp4",
                         "version": "latest"
                     },
-                    "dataDisks": [
+                    "dataDisks": "[if(equals(parameters('useCase'), 'ASCS'), json('null'), json(concat('[
                         {
-                            "lun": 0,
-                            "name": "[concat(variables('label'), '-app', copyIndex(1), '-data-disk1')]",
-                            "createOption": "empty",
-                            "caching": "ReadWrite",
-                            "diskSizeGb": "[parameters('dataDiskSize')]",
-                            "managedDisk": {
-                                "storageAccountType": "[variables('storageSku')]"
+                            \"lun\": 0,
+                            \"name\": \"', variables('label'), '-app', copyIndex(1), '-data-disk1', '\",
+                            \"createOption\": \"empty\",
+                            \"caching\": \"ReadWrite\",
+                            \"diskSizeGb\": \"', parameters('dataDiskSize'), '\",
+                            \"managedDisk\": {
+                                \"storageAccountType\": \"', variables('storageSku'), '\"
                             },
-                            "writeAcceleratorEnabled": false
+                            \"writeAcceleratorEnabled\": false
                         }
-                    ]
+                    ]')))]"   
                 },
                 "availabilitySet": {
                     "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/availabilitySets', variables('avsetName'))]"
                 },
                 "osProfile": {
-                    "computerName": "[concat(variables('label'), '-app', copyIndex(1))]",
+                    "computerName": "[concat(variables('label'), variables('useCase'), copyIndex(1))]",
                     "adminUsername": "dohughes",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,

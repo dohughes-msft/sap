@@ -11,7 +11,7 @@
         },
         "virtualNetworkAddressSpace": {
             "type": "string",
-            "defaultValue": "10.0.0.0/16",
+            "defaultValue": "10.1.0.0/16",
             "metadata": {
                 "description": "Address space of the virtual network."
             }
@@ -25,7 +25,7 @@
         },
         "dbSubnetAddressSpace": {
             "type": "string",
-            "defaultValue": "10.0.0.0/24",
+            "defaultValue": "10.1.1.0/24",
             "metadata": {
                 "description": "Address space of the database subnet."
             }
@@ -39,7 +39,7 @@
         },
         "appSubnetAddressSpace": {
             "type": "string",
-            "defaultValue": "10.0.0.0/24",
+            "defaultValue": "10.1.2.0/24",
             "metadata": {
                 "description": "Address space of the application subnet."
             }

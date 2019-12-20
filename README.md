@@ -28,7 +28,7 @@ You select the disk sizes for executables, datafiles, and transaction logs.
 ## Examples
 1. For a non-redundant system like sandbox, development, etc. deploy:
     1. one application server VM using template (3)
-    2. one HANA or AnyDB VM using template (3a) or (3b)
+    2. one HANA or AnyDB VM using template (4a) or (4b)
 2. For a fully redundant system like production, deploy:
     1. one ANF account/pool using template (2) or two NFS VMs using template (3)
     2. two ASCS VMs using template (3)

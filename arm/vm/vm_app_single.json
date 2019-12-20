@@ -6,7 +6,7 @@
             "type": "string",
             "minLength": 3,
             "maxLength": 3,
-            "defaultValue": "NH2",
+            "defaultValue": "S01",
             "metadata": {
                 "description": "The SAP system ID."
             }

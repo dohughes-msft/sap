@@ -1,0 +1,119 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {},
+  "variables": {
+    "numDataDisks": 5,
+    "numLogDisks": 2,
+    "temp-disk-array": {
+      "copy": [
+          {
+              "name": "exeDisk",
+              "count": 1,
+              "input": {
+                        "suffix": "[concat('exe-disk', copyIndex('exeDisk'))]",
+                        "diskSizeGB": "1",
+                        "lun": "[copyIndex('exeDisk')]"
+                    }
+          },
+        {
+          "name": "dataDisks",
+          "count": "[variables('numDataDisks')]",
+          "input": {
+            "suffix": "[concat('data-disk', copyIndex('dataDisks'))]",
+            "diskSizeGB": "1",
+            "lun": "[copyIndex('dataDisks', 1)]"
+          }
+        },
+        {
+          "name": "logDisks",
+          "count": "[variables('numLogDisks')]",
+          "input": {
+            "suffix": "[concat('log-disk', copyIndex('logDisks'))]",
+            "diskSizeGB": "1",
+            "lun": "[copyIndex('logDisks', add(variables('numDataDisks'), 1))]"
+          }
+        }
+      ]
+    },
+    "all-disks": "[concat(variables('temp-disk-array').exeDisk, variables('temp-disk-array').dataDisks, variables('temp-disk-array').logDisks)]",
+    "temp-disk-array-2": {
+      "copy": [
+          {
+              "name": "exeDisk",
+              "count": 1,
+              "input": {
+                        "suffix": "[concat('exe-disk', copyIndex('exeDisk'))]",
+                        "diskSizeGB": "1",
+                        "lun": "[copyIndex('exeDisk')]"
+                    }
+          },
+        {
+          "name": "dataDisks",
+          "count": "[variables('numDataDisks')]",
+          "input": {
+            "suffix": "[concat('data-disk', copyIndex('dataDisks'))]",
+            "diskSizeGB": "1",
+            "lun": "[copyIndex('dataDisks', 1)]"
+          }
+        },
+        {
+          "name": "logDisks",
+          "count": "[variables('numLogDisks')]",
+          "input": {
+            "suffix": "[concat('log-disk', copyIndex('logDisks'))]",
+            "diskSizeGB": "1",
+            "lun": "[copyIndex('logDisks', add(variables('numDataDisks'), 1))]"
+          }
+        }
+      ]
+    }
+/*        {
+          "name": "diskNames",
+          "count": 5,
+          "input": "[concat('myDataDisk', copyIndex('diskNames', 1))]"
+        }
+      ]
+    },
+    "copy": [
+      {
+        "name": "top-level-object-array",
+        "count": 5,
+        "input": {
+          "name": "[concat('myDataDisk', copyIndex('top-level-object-array', 1))]",
+          "diskSizeGB": "1",
+          "diskIndex": "[copyIndex('top-level-object-array')]"
+        }
+      },
+      {
+        "name": "top-level-string-array",
+        "count": 5,
+        "input": "[concat('myDataDisk', copyIndex('top-level-string-array', 1))]"
+      },
+      {
+        "name": "top-level-integer-array",
+        "count": 5,
+        "input": "[copyIndex('top-level-integer-array')]"
+      }
+    ] */
+  },
+  "resources": [],
+  "outputs": {
+    "list-of-disks": {
+        "type": "array",
+        "value": "[variables('all-disks')]"
+    }
+/*    "exampleObjectArray": {
+      "value": "[variables('top-level-object-array')]",
+      "type" : "array"
+    },
+    "exampleStringArray": {
+      "value": "[variables('top-level-string-array')]",
+      "type" : "array"
+    },
+    "exampleIntegerArray": {
+      "value": "[variables('top-level-integer-array')]",
+      "type" : "array"
+    } */
+  }
+}

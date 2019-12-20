@@ -1,5 +1,5 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "netappAccountName": {
@@ -39,7 +39,8 @@
         }
     },
     "variables": {
-        "capacityPoolSizeBytes": "[mul(mul(parameters('capacityPoolSizeTb'), 1073741824), 1024)]" // extra mul function to get around the limitation of PowerShell where an integer cannot be greater than 2147483647
+        "capacityPoolSizeBytes": "[mul(mul(parameters('capacityPoolSizeTb'), 1073741824), 1024)]",
+        "capacityPoolSizeBytesComment": "An extra mul function is needed to get around the limitation of PowerShell where an integer cannot be greater than 2147483647."
     },
     "resources": [
         {

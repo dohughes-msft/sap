@@ -10,11 +10,16 @@ With the Azure Resource Manager templates below you can deploy Azure infrastruct
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fvm%2Fvm_app_multi_singleline.json)
 
 ## 3. Database layer
-### Deploy HANA VMs to Azure (single or cluster)
+### 3a. Deploy HANA VMs to Azure (single or cluster)
 Note: Disk configurations for SAP HANA are based on the Microsoft recommended layouts at:
 https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/hana-vm-operations-storage.
 
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fvm%2Fvm_hana_multi_singleline.json)
+
+### 3b. Deploy AnyDB VMs to Azure (single or cluster)
+You select the disk sizes for executables, datafiles, and transaction logs.
+
+[![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fvm%2Fvm_anydb_multi_singleline.json)
 
 ## Examples
 1. For a non-redundant system like sandbox, development, etc. deploy:

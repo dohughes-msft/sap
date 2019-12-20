@@ -1,0 +1,376 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sapSystemId": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "defaultValue": "NH1",
+            "metadata": {
+                "description": "The SAP system ID."
+            }
+        },
+        "vnetRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the virtual network. Leave blank if same as the current resource group."
+            }
+        },
+        "vnet": {
+            "type": "string",
+            "defaultValue": "sap-prod-vnet-1",
+            "metadata": {
+                "description": "Virtual network."
+            }
+        },
+        "subnet": {
+            "type": "string",
+            "defaultValue": "sap-db-subnet",
+            "metadata": {
+                "description": "Subnet."
+            }
+        },
+        "nsgRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the network security group. Leave blank if same as the current resource group."
+            }
+        },
+        "networkSecurityGroup": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Network security group to apply to the NIC. Leave blank if none."
+            }
+        },
+        "publicIp": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Should a public IP address be deployed."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_DS14_v2",
+                "Standard_E16s_v3",
+                "Standard_E32s_v3",
+                "Standard_E64s_v3",
+                "Standard_GS5",
+                "Standard_M32ts",
+                "Standard_M32ls",
+                "Standard_M64ls",
+                "Standard_M64s",
+                "Standard_M64ms",
+                "Standard_M128s",
+                "Standard_M128ms",
+                "Standard_M208s_v2",
+                "Standard_M208ms_v2",
+                "Standard_M416s_v2",
+                "Standard_M416ms_v2"
+            ],
+            "defaultValue": "Standard_E16s_v3",
+            "metadata": {
+                "description": "Virtual machine size. Also determines which disks will be attached."
+            }
+        },
+        "executableDiskSize": {
+            "type": "int",
+            "allowedValues": [
+                32,
+                64,
+                128,
+                256,
+                512
+            ],
+            "defaultValue": 64,
+            "metadata": {
+                "description": "Size of the disk for database executables, e.g. /oracle/SID."
+            }
+        },
+        "dataDiskSize": {
+            "type": "int",
+            "allowedValues": [
+                32,
+                64,
+                128,
+                256,
+                512,
+                1024,
+                2048,
+                4096,
+                8192,
+                16384,
+                32767
+            ],
+            "defaultValue": 64,
+            "metadata": {
+                "description": "Size of each data disk for database data, e.g. /oracle/SID/sapdata1."
+            }
+        },
+        "dataDiskNumber": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 99,
+            "metadata": {
+                "description": "Number of data disks."
+            }
+        },
+        "logDiskSize": {
+            "type": "int",
+            "allowedValues": [
+                32,
+                64,
+                128,
+                256,
+                512
+            ],
+            "defaultValue": 64,
+            "metadata": {
+                "description": "Size of each data disk for database logs, e.g. /oracle/SID/origlogA."
+            }
+        },
+        "logDiskNumber": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 10,
+            "metadata": {
+                "description": "Number of log disks."
+            }
+        },
+        "role": {
+            "type": "string",
+            "defaultValue": "Production",
+            "allowedValues": [
+                "Production",
+                "Non-production"
+            ],
+            "metadata": {
+                "description": "This will affect the storage SKUs used."
+            }
+        },
+        "quantity": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                1,
+                2
+            ],
+            "metadata": {
+                "description": "Number of identical servers to deploy. Select 2 if you plan to create a cluster."
+            }
+        }
+    },
+    "variables": {
+        "repoPath": "https://raw.githubusercontent.com/dohughes-msft/sap/master/arm/disk/",
+        "location": "[resourceGroup().location]",
+        "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
+        "ppgName": "[concat(variables('label'), '-ppg')]",
+        "avsetName": "[concat(variables('label'), '-db-avset')]",
+        "vnetRg": "[if(empty(parameters('vnetRg')), resourceGroup().name, parameters('vnetRg'))]",
+        "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
+        "nsgRg": "[if(empty(parameters('nsgRg')), resourceGroup().name, parameters('nsgRg'))]",
+        "nsgId": {
+            "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+        },
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Compute/proximityPlacementGroups",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('ppgName')]",
+            "location": "[variables('location')]",
+            "tags": {},
+            "dependsOn": [],
+            "properties": {
+                "proximityPlacementGroupType": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-09-01",
+            "condition": "[parameters('publicIp')]",
+            "name": "[concat(variables('label'), '-db', copyIndex(1), '-pip1')]",
+            "location": "[variables('location')]",
+            "dependsOn": [],
+            "sku": {
+                "name": "Standard"
+            },
+            "copy": {
+                "count": "[parameters('quantity')]",
+                "name": "piploop"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(variables('label'), '-db', copyIndex(1))]",
+                    "fqdn": "[concat(variables('label'), '-db', copyIndex(1), '.', variables('location'), '.cloudapp.azure.com')]"
+                },
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('avsetName')]",
+            "location": "[variables('location')]",
+            "tags": {},
+            "dependsOn": [
+                "[variables('ppgName')]"
+            ],
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 5,
+                "proximityPlacementGroup": {
+                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/proximityPlacementGroups', variables('ppgName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(variables('label'), '-db', copyIndex(1), '-nic1')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(variables('label'), '-db', copyIndex(1), '-pip1')]"
+            ],
+            "copy": {
+                "count": "[parameters('quantity')]",
+                "name": "nicloop"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": "[if(not(parameters('publicIp')), json('null'), json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex(1), '-pip1')), '\"}')))]",
+                            "subnet": {
+                                "id": "[variables('subnetId')]"
+                                },
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "networkSecurityGroup": "[if(empty(parameters('networkSecurityGroup')), json('null'), variables('nsgId'))]",
+                "enableAcceleratedNetworking": true
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('label'), '-db', copyIndex(1))]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(variables('label'), '-db', copyIndex(1), '-nic1')]",
+                "[variables('avsetName')]"
+            ],
+            "tags": {},
+            "copy": {
+                "count": "[parameters('quantity')]",
+                "name": "vmloop"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), '-db', copyIndex(1), '-nic1'))]"
+                        }
+                    ]
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "name": "[concat(variables('label'), '-db', copyIndex(1), '-os-disk1')]",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "[variables('storageSku')]"
+                        },
+                        "diskSizeGb": 128
+                    },
+                    "imageReference": {
+                        "publisher": "SUSE",
+                        "offer": "SLES-SAP",
+                        "sku": "12-sp4",
+                        "version": "latest"
+                    },
+                    "copy": [
+                        {
+                            "name": "dataDisks",
+                            "count": "[add(add(parameters('dataDiskNumber'), parameters('logDiskNumber')), 1)]",
+                            "input": {
+                                "name": "[concat(variables('label'), '-db', copyIndex(1), if(equals(copyIndex('datadisks'), 0), '-exe-disk1', if(greater(copyIndex('dataDisks'), parameters('dataDiskNumber')), concat('-log-disk', sub(copyIndex('dataDisks'), parameters('dataDiskNumber'))), concat('-data-disk', copyIndex('dataDisks')))))]",
+                                "lun": "[copyIndex('dataDisks')]",
+                                "createOption": "empty",
+                                "caching": "none",
+                                "managedDisk": {
+                                    "storageAccountType": "[variables('storageSku')]"
+                                },
+                                "diskSizeGb": "[if(equals(copyIndex('dataDisks'), 0), parameters('executableDiskSize'), if(greater(copyIndex('dataDisks'), parameters('dataDiskNumber')), parameters('logDiskSize'), parameters('dataDiskSize')))]"
+                            }
+                        }
+                    ]
+                },
+                "availabilitySet": {
+                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/availabilitySets', variables('avsetName'))]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('label'), '-db', copyIndex(1))]",
+                    "adminUsername": "dohughes",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVU6+IWrV6/BclQ4jM9uqE9nxRnzQ2/iTMhuI8LzC+jJZE2UQ8NCvqsEwBa0DWffyEYuEVBTdezIahE9CIv1Sllnr8yfkQ78pSlwm7Y6dStaqudwY+s0+LSPESKbeWZ/VYT+3gCqDVNXT1zysvUmYViNtFX/dVpiBi1o2erCE7IGNaPiAKsF4iOmjDEwgeS94cIKkN9t3jUs091lwxQT1//gIA+rFoW18F/tkKF0OUkfna8g7hEj2IvQG0gm3sB7EwBj3Q/0fPXAIC3mhgqnPaOyiIhqwfaWHEQWRx6RGQGZlyovbYzGuch4K/oPu6jyKnpmzfwEpnQt056WJ1rIsr",
+                                    "path": "/home/dohughes/.ssh/authorized_keys"
+                                }
+                            ]
+                        }
+                    }
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true,
+                        "storageUri": "https://sapsa1.blob.core.windows.net/"
+                    }
+                }
+            }
+        }
+    ],
+    "outputs": {
+        "Resource group": {
+            "type": "string",
+            "value": "[resourceGroup().name]"
+        },
+        "PPG name": {
+            "type": "string",
+            "value": "[variables('ppgName')]"
+        },
+        "AvSet name": {
+            "type": "string",
+            "value": "[variables('avsetName')]"
+        },
+        "Role": {
+            "type": "string",
+            "value": "[parameters('role')]"
+        }
+    }
+}

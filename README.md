@@ -28,5 +28,5 @@ You select the disk sizes for executables, datafiles, and transaction logs.
 2. For a fully redundant system like production, deploy:
     1. two NFS VMs using template (2)
     2. two ASCS VMs using template (2)
-    3. two HANA VMs using template (3)
+    3. two HANA or AnyDB VMs using template (3a) or (3b)
     4. any number of application server VMs using template (2)

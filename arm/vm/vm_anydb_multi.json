@@ -118,7 +118,7 @@
                 16384,
                 32767
             ],
-            "defaultValue": 64,
+            "defaultValue": 512,
             "metadata": {
                 "description": "Size of each data disk for database data, e.g. /oracle/SID/sapdata1."
             }
@@ -141,7 +141,7 @@
                 256,
                 512
             ],
-            "defaultValue": 64,
+            "defaultValue": 32,
             "metadata": {
                 "description": "Size of each data disk for database logs, e.g. /oracle/SID/origlogA."
             }
@@ -166,7 +166,7 @@
                 "description": "This will affect the storage SKUs used."
             }
         },
-        "quantity": {
+        "numberOfVms": {
             "type": "int",
             "defaultValue": 1,
             "allowedValues": [
@@ -215,7 +215,7 @@
                 "name": "Standard"
             },
             "copy": {
-                "count": "[parameters('quantity')]",
+                "count": "[parameters('numberOfVms')]",
                 "name": "piploop"
             },
             "properties": {
@@ -258,7 +258,7 @@
                 "[concat(variables('label'), '-db', copyIndex(1), '-pip1')]"
             ],
             "copy": {
-                "count": "[parameters('quantity')]",
+                "count": "[parameters('numberOfVms')]",
                 "name": "nicloop"
             },
             "properties": {
@@ -291,7 +291,7 @@
             ],
             "tags": {},
             "copy": {
-                "count": "[parameters('quantity')]",
+                "count": "[parameters('numberOfVms')]",
                 "name": "vmloop"
             },
             "properties": {

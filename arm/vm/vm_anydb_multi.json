@@ -190,7 +190,42 @@
         "nsgId": {
             "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
-        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
+        "disks": {
+            "copy": [
+                {
+                    "name": "exeDisk",
+                    "count": 1,
+                    "input": {
+                        "suffix": "[concat('-exe-disk', copyIndex('exeDisk', 1))]",
+                        "diskSizeGb": "[parameters('executableDiskSize')]",
+                        "lun": "[copyIndex('exeDisk')]",
+                        "caching": "ReadWrite"
+                    }
+                },
+                {
+                    "name": "dataDisks",
+                    "count": "[parameters('dataDiskNumber')]",
+                    "input": {
+                        "suffix": "[concat('-data-disk', copyIndex('dataDisks', 1))]",
+                        "diskSizeGb": "[parameters('dataDiskSize')]",
+                        "lun": "[copyIndex('dataDisks', 1)]",
+                        "caching": "None"
+                    }
+                },
+                {
+                    "name": "logDisks",
+                    "count": "[parameters('logDiskNumber')]",
+                    "input": {
+                        "suffix": "[concat('-log-disk', copyIndex('logDisks', 1))]",
+                        "diskSizeGb": "[parameters('logDiskSize')]",
+                        "lun": "[copyIndex('logDisks', add(parameters('dataDiskNumber'), 1))]",
+                        "caching": "None"
+                    }
+                }
+            ]
+        },
+        "disk-array": "[concat(variables('disks').exeDisk, variables('disks').dataDisks, variables('disks').logDisks)]"
     },
     "resources": [
         {
@@ -208,7 +243,7 @@
             "type": "Microsoft.Network/publicIPAddresses",
             "apiVersion": "2019-09-01",
             "condition": "[parameters('publicIp')]",
-            "name": "[concat(variables('label'), '-db', copyIndex(1), '-pip1')]",
+            "name": "[concat(variables('label'), '-db', copyIndex('piploop', 1), '-pip1')]",
             "location": "[variables('location')]",
             "dependsOn": [],
             "sku": {
@@ -223,8 +258,8 @@
                 "publicIPAllocationMethod": "Static",
                 "idleTimeoutInMinutes": 4,
                 "dnsSettings": {
-                    "domainNameLabel": "[concat(variables('label'), '-db', copyIndex(1))]",
-                    "fqdn": "[concat(variables('label'), '-db', copyIndex(1), '.', variables('location'), '.cloudapp.azure.com')]"
+                    "domainNameLabel": "[concat(variables('label'), '-db', copyIndex('piploop', 1))]",
+                    "fqdn": "[concat(variables('label'), '-db', copyIndex('piploop', 1), '.', variables('location'), '.cloudapp.azure.com')]"
                 },
                 "ipTags": []
             }
@@ -252,10 +287,10 @@
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "name": "[concat(variables('label'), '-db', copyIndex(1), '-nic1')]",
+            "name": "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-nic1')]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[concat(variables('label'), '-db', copyIndex(1), '-pip1')]"
+                "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-pip1')]"
             ],
             "copy": {
                 "count": "[parameters('numberOfVms')]",
@@ -268,7 +303,7 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": "[if(not(parameters('publicIp')), json('null'), json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex(1), '-pip1')), '\"}')))]",
+                            "publicIPAddress": "[if(not(parameters('publicIp')), json('null'), json(concat('{\"id\": \"', resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex('nicloop', 1), '-pip1')), '\"}')))]",
                             "subnet": {
                                 "id": "[variables('subnetId')]"
                                 },
@@ -283,10 +318,10 @@
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
-            "name": "[concat(variables('label'), '-db', copyIndex(1))]",
+            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1))]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[concat(variables('label'), '-db', copyIndex(1), '-nic1')]",
+                "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-nic1')]",
                 "[variables('avsetName')]"
             ],
             "tags": {},
@@ -301,14 +336,14 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), '-db', copyIndex(1), '-nic1'))]"
+                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-nic1'))]"
                         }
                     ]
                 },
                 "storageProfile": {
                     "osDisk": {
                         "createOption": "fromImage",
-                        "name": "[concat(variables('label'), '-db', copyIndex(1), '-os-disk1')]",
+                        "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-os-disk1')]",
                         "caching": "ReadWrite",
                         "managedDisk": {
                             "storageAccountType": "[variables('storageSku')]"
@@ -324,16 +359,16 @@
                     "copy": [
                         {
                             "name": "dataDisks",
-                            "count": "[add(add(parameters('dataDiskNumber'), parameters('logDiskNumber')), 1)]",
+                            "count": "[length(variables('disk-array'))]",
                             "input": {
-                                "name": "[concat(variables('label'), '-db', copyIndex(1), if(equals(copyIndex('datadisks'), 0), '-exe-disk1', if(greater(copyIndex('dataDisks'), parameters('dataDiskNumber')), concat('-log-disk', sub(copyIndex('dataDisks'), parameters('dataDiskNumber'))), concat('-data-disk', copyIndex('dataDisks')))))]",
-                                "lun": "[copyIndex('dataDisks')]",
+                                "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), variables('disk-array')[copyIndex('dataDisks')].suffix)]",
+                                "lun": "[variables('disk-array')[copyIndex('dataDisks')].lun]",
                                 "createOption": "empty",
-                                "caching": "none",
+                                "caching": "[variables('disk-array')[copyIndex('dataDisks')].caching]",
                                 "managedDisk": {
                                     "storageAccountType": "[variables('storageSku')]"
                                 },
-                                "diskSizeGb": "[if(equals(copyIndex('dataDisks'), 0), parameters('executableDiskSize'), if(greater(copyIndex('dataDisks'), parameters('dataDiskNumber')), parameters('logDiskSize'), parameters('dataDiskSize')))]"
+                                "diskSizeGb": "[variables('disk-array')[copyIndex('dataDisks')].diskSizeGb]"
                             }
                         }
                     ]
@@ -342,7 +377,7 @@
                     "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/availabilitySets', variables('avsetName'))]"
                 },
                 "osProfile": {
-                    "computerName": "[concat(variables('label'), '-db', copyIndex(1))]",
+                    "computerName": "[concat(variables('label'), '-db', copyIndex('vmloop', 1))]",
                     "adminUsername": "dohughes",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,

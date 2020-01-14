@@ -1,119 +1,237 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-  "contentVersion": "1.0.0.0",
-  "parameters": {},
-  "variables": {
-    "numDataDisks": 5,
-    "numLogDisks": 2,
-    "temp-disk-array": {
-      "copy": [
-          {
-              "name": "exeDisk",
-              "count": 1,
-              "input": {
-                        "suffix": "[concat('exe-disk', copyIndex('exeDisk'))]",
-                        "diskSizeGB": "1",
-                        "lun": "[copyIndex('exeDisk')]"
-                    }
-          },
-        {
-          "name": "dataDisks",
-          "count": "[variables('numDataDisks')]",
-          "input": {
-            "suffix": "[concat('data-disk', copyIndex('dataDisks'))]",
-            "diskSizeGB": "1",
-            "lun": "[copyIndex('dataDisks', 1)]"
-          }
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sapSystemId": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 3,
+            "defaultValue": "NH1",
+            "metadata": {
+                "description": "The SAP system ID."
+            }
         },
-        {
-          "name": "logDisks",
-          "count": "[variables('numLogDisks')]",
-          "input": {
-            "suffix": "[concat('log-disk', copyIndex('logDisks'))]",
-            "diskSizeGB": "1",
-            "lun": "[copyIndex('logDisks', add(variables('numDataDisks'), 1))]"
-          }
-        }
-      ]
-    },
-    "all-disks": "[concat(variables('temp-disk-array').exeDisk, variables('temp-disk-array').dataDisks, variables('temp-disk-array').logDisks)]",
-    "temp-disk-array-2": {
-      "copy": [
-          {
-              "name": "exeDisk",
-              "count": 1,
-              "input": {
-                        "suffix": "[concat('exe-disk', copyIndex('exeDisk'))]",
-                        "diskSizeGB": "1",
-                        "lun": "[copyIndex('exeDisk')]"
-                    }
-          },
-        {
-          "name": "dataDisks",
-          "count": "[variables('numDataDisks')]",
-          "input": {
-            "suffix": "[concat('data-disk', copyIndex('dataDisks'))]",
-            "diskSizeGB": "1",
-            "lun": "[copyIndex('dataDisks', 1)]"
-          }
+        "vnetRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the virtual network. Leave blank if same as the current resource group."
+            }
         },
-        {
-          "name": "logDisks",
-          "count": "[variables('numLogDisks')]",
-          "input": {
-            "suffix": "[concat('log-disk', copyIndex('logDisks'))]",
-            "diskSizeGB": "1",
-            "lun": "[copyIndex('logDisks', add(variables('numDataDisks'), 1))]"
-          }
+        "vnet": {
+            "type": "string",
+            "defaultValue": "sap-prod-vnet-1",
+            "metadata": {
+                "description": "Virtual network."
+            }
+        },
+        "subnet": {
+            "type": "string",
+            "defaultValue": "sap-db-subnet",
+            "metadata": {
+                "description": "Subnet."
+            }
+        },
+        "nsgRg": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the network security group. Leave blank if same as the current resource group."
+            }
+        },
+        "networkSecurityGroup": {
+            "type": "string",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Network security group to apply to the NIC. Leave blank if none."
+            }
+        },
+        "publicIp": {
+            "type": "bool",
+            "defaultValue": false,
+            "metadata": {
+                "description": "Should a public IP address be deployed."
+            }
+        },
+        "vmSize": {
+            "type": "string",
+            "allowedValues": [
+                "Standard_D4s_v3",
+                "Standard_D8s_v3",
+                "Standard_D16s_v3",
+                "Standard_D32s_v3",
+                "Standard_D48s_v3",
+                "Standard_D64s_v3",
+                "Standard_E4s_v3",
+                "Standard_E8s_v3",
+                "Standard_E16s_v3",
+                "Standard_E20s_v3",
+                "Standard_E32s_v3",
+                "Standard_E48s_v3",
+                "Standard_E64s_v3",
+                "Standard_M8ms",
+                "Standard_M16ms",
+                "Standard_M32ls",
+                "Standard_M32ms",
+                "Standard_M32ts",
+                "Standard_M64ls",
+                "Standard_M64ms",
+                "Standard_M64s",
+                "Standard_M128ms",
+                "Standard_M128s",
+                "Standard_M208ms_v2",
+                "Standard_M208s_v2",
+                "Standard_M416s_v2",
+                "Standard_M416ms_v2"
+            ],
+            "defaultValue": "Standard_E16s_v3",
+            "metadata": {
+                "description": "Virtual machine size. Also determines which disks will be attached."
+            }
+        },
+        "executableDiskSize": {
+            "type": "int",
+            "allowedValues": [
+                32,
+                64,
+                128,
+                256,
+                512
+            ],
+            "defaultValue": 64,
+            "metadata": {
+                "description": "Size of the disk for database executables, e.g. /oracle/SID."
+            }
+        },
+        "dataDiskSize": {
+            "type": "int",
+            "allowedValues": [
+                32,
+                64,
+                128,
+                256,
+                512,
+                1024,
+                2048,
+                4096,
+                8192,
+                16384,
+                32767
+            ],
+            "defaultValue": 512,
+            "metadata": {
+                "description": "Size of each data disk for database data, e.g. /oracle/SID/sapdata1."
+            }
+        },
+        "dataDiskNumber": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 99,
+            "metadata": {
+                "description": "Number of data disks."
+            }
+        },
+        "logDiskSize": {
+            "type": "int",
+            "allowedValues": [
+                32,
+                64,
+                128,
+                256,
+                512
+            ],
+            "defaultValue": 32,
+            "metadata": {
+                "description": "Size of each data disk for database logs, e.g. /oracle/SID/origlogA."
+            }
+        },
+        "logDiskNumber": {
+            "type": "int",
+            "defaultValue": 1,
+            "minValue": 1,
+            "maxValue": 10,
+            "metadata": {
+                "description": "Number of log disks."
+            }
+        },
+        "role": {
+            "type": "string",
+            "defaultValue": "Production",
+            "allowedValues": [
+                "Production",
+                "Non-production"
+            ],
+            "metadata": {
+                "description": "This will affect the storage SKUs used."
+            }
+        },
+        "numberOfVms": {
+            "type": "int",
+            "defaultValue": 1,
+            "allowedValues": [
+                1,
+                2
+            ],
+            "metadata": {
+                "description": "Number of identical servers to deploy. Select 2 if you plan to create a cluster."
+            }
         }
-      ]
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "label": "[concat('sap-', toLower(parameters('sapSystemId')))]",
+        "ppgName": "[concat(variables('label'), '-ppg')]",
+        "avsetName": "[concat(variables('label'), '-db-avset')]",
+        "vnetRg": "[if(empty(parameters('vnetRg')), resourceGroup().name, parameters('vnetRg'))]",
+        "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', parameters('vnet'))]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnet'))]",
+        "nsgRg": "[if(empty(parameters('nsgRg')), resourceGroup().name, parameters('nsgRg'))]",
+        "nsgId": {
+            "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
+        },
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
+        "disks": {
+            "copy": [
+                {
+                    "name": "exeDisk",
+                    "count": 1,
+                    "input": {
+                        "suffix": "[concat('-exe-disk', copyIndex('exeDisk', 1))]",
+                        "diskSizeGb": "[parameters('executableDiskSize')]",
+                        "lun": "[copyIndex('exeDisk')]",
+                        "caching": "ReadWrite"
+                    }
+                },
+                {
+                    "name": "dataDisks",
+                    "count": "[parameters('dataDiskNumber')]",
+                    "input": {
+                        "suffix": "[concat('-data-disk', copyIndex('dataDisks', 1))]",
+                        "diskSizeGb": "[parameters('dataDiskSize')]",
+                        "lun": "[copyIndex('dataDisks', 1)]",
+                        "caching": "None"
+                    }
+                },
+                {
+                    "name": "logDisks",
+                    "count": "[parameters('logDiskNumber')]",
+                    "input": {
+                        "suffix": "[concat('-log-disk', copyIndex('logDisks', 1))]",
+                        "diskSizeGb": "[parameters('logDiskSize')]",
+                        "lun": "[copyIndex('logDisks', add(parameters('dataDiskNumber'), 1))]",
+                        "caching": "None"
+                    }
+                }
+            ]
+        },
+        "disk-array": "[concat(variables('disks').exeDisk, variables('disks').dataDisks, variables('disks').logDisks)]"
+    },
+    "resources": [],
+    "outputs": {
+        "Disk array": {
+            "type": "array",
+            "value": "[variables('disk-array')]"
+        }
     }
-/*        {
-          "name": "diskNames",
-          "count": 5,
-          "input": "[concat('myDataDisk', copyIndex('diskNames', 1))]"
-        }
-      ]
-    },
-    "copy": [
-      {
-        "name": "top-level-object-array",
-        "count": 5,
-        "input": {
-          "name": "[concat('myDataDisk', copyIndex('top-level-object-array', 1))]",
-          "diskSizeGB": "1",
-          "diskIndex": "[copyIndex('top-level-object-array')]"
-        }
-      },
-      {
-        "name": "top-level-string-array",
-        "count": 5,
-        "input": "[concat('myDataDisk', copyIndex('top-level-string-array', 1))]"
-      },
-      {
-        "name": "top-level-integer-array",
-        "count": 5,
-        "input": "[copyIndex('top-level-integer-array')]"
-      }
-    ] */
-  },
-  "resources": [],
-  "outputs": {
-    "list-of-disks": {
-        "type": "array",
-        "value": "[variables('all-disks')]"
-    }
-/*    "exampleObjectArray": {
-      "value": "[variables('top-level-object-array')]",
-      "type" : "array"
-    },
-    "exampleStringArray": {
-      "value": "[variables('top-level-string-array')]",
-      "type" : "array"
-    },
-    "exampleIntegerArray": {
-      "value": "[variables('top-level-integer-array')]",
-      "type" : "array"
-    } */
-  }
 }

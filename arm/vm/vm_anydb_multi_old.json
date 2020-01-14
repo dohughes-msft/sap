@@ -190,39 +190,7 @@
         "nsgId": {
             "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
-        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
-        "disk-array-on-object": {
-            "copy": [
-                {
-                    "name": "exeDisk",
-                    "count": 1,
-                    "input": {
-                        "suffix": "[concat('exe-disk', copyIndex('exeDisk'))]",
-                        "diskSizeGB": "[parameters('executableDiskSize')]",
-                        "lun": "[copyIndex('exeDisk')]"
-                    }
-                },
-                {
-                    "name": "dataDisks",
-                    "count": "[parameters('dataDiskNumber')]",
-                    "input": {
-                        "suffix": "[concat('exe-disk', copyIndex('dataDisks'))]",
-                        "diskSizeGB": "[parameters('dataDiskSize')]",
-                        "lun": "[copyIndex('dataDisks', 1)]"
-                    }
-                },
-                {
-                    "name": "logDisks",
-                    "count": "[parameters('logDiskNumber')]",
-                    "input": {
-                        "suffix": "[concat('exe-disk', copyIndex('exeDisk'))]",
-                        "diskSizeGB": "[parameters('logDiskSize')]",
-                        "lun": "[copyIndex('logDisks', add(parameters('dataDiskNumber'), 1))]"
-                    }
-                }
-            ]
-        },
-        "all-disks": "[concat(variables('disk-array-on-object').exeDisk, variables('disk-array-on-object').dataDisks, variables('disk-array-on-object').logDisks)]"
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"
     },
     "resources": [
         {

@@ -151,7 +151,8 @@
         "nsgId": {
             "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
-        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]"          
+        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
+        "diagStorageAccount": "https://sapsa1.blob.core.windows.net/"          
     },
     "resources": [
         {
@@ -305,7 +306,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "https://sapsa1.blob.core.windows.net/"
+                        "storageUri": "[variables('diagStorageAccount')]"
                     }
                 }
             }

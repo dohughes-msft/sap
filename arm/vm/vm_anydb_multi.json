@@ -86,7 +86,7 @@
             ],
             "defaultValue": "Standard_E16s_v3",
             "metadata": {
-                "description": "Virtual machine size. Also determines which disks will be attached."
+                "description": "Virtual machine size."
             }
         },
         "executableDiskSize": {
@@ -96,7 +96,8 @@
                 64,
                 128,
                 256,
-                512
+                512,
+                1024
             ],
             "defaultValue": 64,
             "metadata": {
@@ -225,7 +226,8 @@
                 }
             ]
         },
-        "disk-array": "[concat(variables('disks').exeDisk, variables('disks').dataDisks, variables('disks').logDisks)]"
+        "disk-array": "[concat(variables('disks').exeDisk, variables('disks').dataDisks, variables('disks').logDisks)]",
+        "diagStorageAccount": "https://sapsa1.blob.core.windows.net/"
     },
     "resources": [
         {
@@ -394,7 +396,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "https://sapsa1.blob.core.windows.net/"
+                        "storageUri": "[variables('diagStorageAccount')]"
                     }
                 }
             }

@@ -2,7 +2,7 @@
 With the Azure Resource Manager templates below you can deploy Azure infrastructure for various types of SAP systems. As far as possible the resource names like hostname are calculated from the SAP system ID. You can adapt the variables within the templates to your own naming convention.
 
 ## 1. Landing zone (optional)
-### Deploy a virtual network, 2 subnets and a single network security group
+### Deploy a virtual network, 2 subnets, a single network security group, and a storage account for diagnostics
 [![Deploy to Azure](https://azuredeploy.net/deploybutton.png)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fdohughes-msft%2Fsap%2Fmaster%2Farm%2Fnetwork%2Fvnet_nsg.json)
 
 ## 2. Azure NetApp Files (optional)

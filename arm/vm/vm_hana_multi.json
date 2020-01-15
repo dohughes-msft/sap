@@ -257,7 +257,8 @@
                     "diskCount": 10
                 }
             }
-        }
+        },
+        "diagStorageAccount": "https://sapsa1.blob.core.windows.net/"
     },
     "resources": [
         {
@@ -450,7 +451,7 @@
                 "diagnosticsProfile": {
                     "bootDiagnostics": {
                         "enabled": true,
-                        "storageUri": "https://sapsa1.blob.core.windows.net/"
+                        "storageUri": "[variables('diagStorageAccount')]"
                     }
                 }
             }

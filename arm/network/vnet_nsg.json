@@ -50,6 +50,13 @@
             "metadata": {
                 "description": "Name of the network security group."
             }
+        },
+        "diagStorageAccountName": {
+            "type": "String",
+            "defaultValue": "[concat('sapstorage', uniqueString(resourceGroup().id))]",
+            "metadata": {
+                "description": "Name of the storage account for boot diagnostics."
+            }
         }
     },
     "variables": {},
@@ -125,6 +132,43 @@
                 "enableDdosProtection": false,
                 "enableVmProtection": false
             }
+        },
+        {
+            "name": "[parameters('diagStorageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[resourceGroup().location]",
+            "properties": {
+                "accessTier": "Hot",
+                "supportsHttpsTrafficOnly": true,
+                "largeFileSharesState": "Disabled"
+            },
+            "dependsOn": [],
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "tags": {}
+        },
+        {
+            "name": "[concat(parameters('diagStorageAccountName'), '/default')]",
+            "type": "Microsoft.Storage/storageAccounts/blobServices",
+            "apiVersion": "2019-06-01",
+            "properties": {
+                "deleteRetentionPolicy": {
+                    "enabled": true,
+                    "days": 7
+                }
+            },
+            "dependsOn": [
+                "[parameters('diagStorageAccountName')]"
+            ]
         }
-    ]
+    ],
+    "outputs": {
+        "Storage account name": {
+            "type": "string",
+            "value": "[parameters('diagStorageAccountName')]"
+        }
+    }
 }

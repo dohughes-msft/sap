@@ -104,7 +104,6 @@
         "dataDiskSize": {
             "type": "int",
             "allowedValues": [
-                0,
                 32,
                 64,
                 128,
@@ -115,7 +114,7 @@
             ],
             "defaultValue": 128,
             "metadata": {
-                "description": "Size of the data disk, e.g. for /usr/sap/SID. For no data disk, select 0."
+                "description": "Size of the data disk, e.g. for /usr/sap/SID. Only for application and NFS servers."
             }
         },
         "role": {
@@ -291,7 +290,7 @@
                         "sku": "12-sp4",
                         "version": "latest"
                     },
-                    "dataDisks": "[if(equals(parameters('dataDiskSize'), 0), json('null'), json(concat('[
+                    "dataDisks": "[if(equals(parameters('useCase'), 'ASCS'), json('null'), json(concat('[
                         {
                             \"lun\": 0,
                             \"name\": \"', variables('label'), variables('useCase'), copyIndex(1), '-data-disk1', '\",

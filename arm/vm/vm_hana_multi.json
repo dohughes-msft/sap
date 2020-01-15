@@ -99,6 +99,13 @@
             "metadata": {
                 "description": "Number of identical servers to deploy. Select 2 if you plan to create a cluster."
             }
+        },
+        "diagStorageAccountName": {
+            "type": "String",
+            "defaultValue": "[concat('sapstorage', uniqueString(resourceGroup().id))]",
+            "metadata": {
+                "description": "Name of the storage account for boot diagnostics."
+            }
         }
     },
     "variables": {
@@ -258,7 +265,7 @@
                 }
             }
         },
-        "diagStorageAccount": "https://sapsa1.blob.core.windows.net/"
+        "diagStorageAccount": "[concat('https://', parameters('diagStorageAccountName'), '.blob.core.windows.net/')]"
     },
     "resources": [
         {

@@ -1,0 +1,5 @@
+SIDsapvg,lvSIDusrsap,/usr/sap/SID,all
+SIDdatalogvg,lvSIDhanalog,/hana/log/SID,512000
+SIDdatalogvg,lvSIDhanadata,/hana/data/SID,1024000
+SIDsharedvg,lvSIDhanashared,/hana/shared/SID,all
+SIDbackupvg,lvSIDhanabackup,/hana/backup/SID,all

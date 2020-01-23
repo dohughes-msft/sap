@@ -1,0 +1,3 @@
+SIDvg,lvSIDusrsap,/usr/sap/SID,10240
+SIDvg,lvSIDsapmnt,/sapmnt/SID,8192
+SIDvg,lvSIDoracle,/oracle/SID,102400

@@ -15,14 +15,14 @@ mkvglvfs.sh -s <SAPSID> -t <configfile>
 The configuration file must contain two sections with an empty line inbetween.
 
 1. A section named `[volumegroups]` that contains a comma-separated list of:
-  * LUN (as known by Azure i.e. 0, 1, 2, etc.)
-  * volume group
+    * LUN (as known by Azure i.e. 0, 1, 2, etc.)
+    * volume group
 
 2. A section named `[filesystems]` that contains a comma-separated list of:
-  * volume group (corresponding to the previous section)
-  * logical volume name
-  * filesystem name
-  * filesystem size as a percentage of the total space in the volume group
+    * volume group (corresponding to the previous section)
+    * logical volume name
+    * filesystem name
+    * filesystem size as a percentage of the total space in the volume group
 
 ### Simple example - SAP application server
 The simplest possible configuration file looks like this:

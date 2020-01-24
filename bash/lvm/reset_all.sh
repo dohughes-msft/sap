@@ -9,7 +9,14 @@ echo
 read -p "Press enter to continue or CTRL-C to cancel."
 
 umount -a -t xfs
-[[ -f /etc/fstab.nodisk ]] && cp -p /etc/fstab.nodisk /etc/fstab
+
+if ls /etc/fstab.* 1> /dev/null 2>&1; then
+    LATEST=$(ls -1 /etc/fstab.* | tail -1)
+    cp -p $LATEST /etc/fstab
+elif [[ -f /etc/fstab.nodisk ]]; then
+    cp -p /etc/fstab.nodisk /etc/fstab
+fi
+
 for i in $(vgs -o vg_name --noheadings); do
   vgremove -y $i
 done

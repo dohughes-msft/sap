@@ -1,9 +1,0 @@
-SIDsapvg,lvSIDusrsap,/usr/sap/SID,20480
-SIDsapvg,lvSIDsapmnt,/sapmnt/SID,10240
-SIDsapvg,lvSIDorahome,/oracle/SID,5120
-SIDsapvg,lvSIDorainst,/oracle/SID/11202,20480
-SIDlogvg,lvSIDoriglogA,/oracle/SID/origlogA,8000
-SIDlogvg,lvSIDoriglogB,/oracle/SID/origlogB,8000
-SIDlogvg,lvSIDmirrlogA,/oracle/SID/mirrlogA,8000
-SIDlogvg,lvSIDmirrlogB,/oracle/SID/mirrlogB,8000
-SIDdatavg,lvSIDsapdata1,/oracle/SID/sapdata1,all

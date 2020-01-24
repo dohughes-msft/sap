@@ -1,0 +1,5 @@
+[volumegroups]
+0,SIDsapvg
+
+[filesystems]
+SIDsapvg,SIDusrsaplv,/usr/sap/SID,100

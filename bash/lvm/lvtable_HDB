@@ -1,5 +1,0 @@
-SIDsapvg,lvSIDusrsap,/usr/sap/SID,all
-SIDlogvg,lvSIDhanalog,/hana/log/SID,all
-SIDdatavg,lvSIDhanadata,/hana/data/SID,all
-SIDsharedvg,lvSIDhanashared,/hana/shared/SID,all
-SIDbackupvg,lvSIDhanabackup,/hana/backup/SID,all

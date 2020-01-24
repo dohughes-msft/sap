@@ -1,9 +1,0 @@
-SIDvg,lvSIDusrsap,/usr/sap/SID,20480
-SIDvg,lvSIDsapmnt,/sapmnt/SID,10240
-SIDvg,lvSIDdb2home,/db2/SID,2048
-SIDvg,lvSIDdb2inst,/db2/db2sid,10240
-SIDvg,lvSIDdb2audit,/db2/SID/db2audit,5120
-SIDvg,lvSIDlogarch,/db2/SID/log_archive,10240
-SIDvg,lvSIDdb2dump,/db2/SID/db2dump,2048
-SIDvg,lvSIDlogdir,/db2/SID/log_dir,10240
-SIDvg,lvSIDdb2data1,/db2/SID/sapdata1,32768

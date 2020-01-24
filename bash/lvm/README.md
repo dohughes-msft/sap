@@ -1,6 +1,6 @@
 # LVM automation scripts
 ## Introduction
-With the bash scripts in this folder you can automate the creation of volume groups, logical volumes, and filesystems for SAP systems. By providing a configuration file that describes the desired state you can finely control which filesystems are created and on which volumes and disks they are located. Filesystems are striped across the maximum number of disks to achieve the best performance.
+With the bash scripts in this folder you can automate the creation of volume groups, logical volumes, and filesystems for SAP systems. By providing a configuration file that describes the desired state you can finely control which filesystems are created and on which volumes and disks they are located. Filesystems are always striped across the maximum number of disks to achieve the best performance.
 
 ## Calling syntax
 ~~~~
@@ -12,7 +12,7 @@ mkvglvfs.sh -s <SAPSID> -t <configfile>
 `<SAPSID>` is the SID of the SAP system. Wherever the program finds "SID" or "sid" in the configuration file, it will replace them with this value.
 
 ## Configuration file
-The configuration file must contain two sections.
+The configuration file must contain two sections with an empty line inbetween.
 
 1. A section named `[volumegroups]` that contains a comma-separated list of:
 * LUN (as known by Azure i.e. 0, 1, 2, etc.)
@@ -22,7 +22,7 @@ The configuration file must contain two sections.
 * volume group (corresponding to the previous section)
 * logical volume name
 * filesystem name
-* filesystem size as a percentage of the whole volume group
+* filesystem size as a percentage of the total space in the volume group
 
 ### Simple example - SAP application server
 The simplest possible configuration file looks like this:
@@ -81,3 +81,8 @@ The result in this case if we keep `SID = NH1` is:
 * Volume group `NH1backupvg` created on disks 8-9
   * Logical volume `NH1hanabackuplv` sized to use all space in the volume group and striped across all disks
     * Filesystem `/hana/backup/NH1`
+
+## Pre-made configuration files
+In folder `diskconfig` you will find pre-made configuration files for HANA, AnyDB and application servers. The HANA configurations correspond to the Microsoft-recommended storage configurations found at:
+
+https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/hana-vm-operations-storage

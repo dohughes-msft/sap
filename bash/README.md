@@ -35,7 +35,7 @@ The simplest possible configuration file looks like this:
 SIDsapvg,SIDusrsaplv,/usr/sap/SID,100
 ~~~~
 
-Running the program with this configuration and `SID = NH1` will result in:
+Running the program with this configuration and parameter `SID = NH1` will result in:
 
 * volume group `NH1sapvg` created on disk 0 (`/dev/disk/azure/scsi1/lun0`)
 * logical volume `NH1usrsaplv` sized to 100% of the volume group size

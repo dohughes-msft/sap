@@ -1,10 +1,10 @@
 #!/bin/bash
 #-------------------------------------------------------------------------
-# Filename: mkvglvfs.sh
+# Filename: lvm4sap.sh
 # Author: Donovan Hughes
 # Info: Script to take a file as input and create LVM groups, volumes and filesystems
 # Set DEBUG=Y before running the script for debug mode
-# Syntax:          mkvglvfs.sh -s <SID> -t <configfile>
+# Syntax:          lvm4sap.sh -s <SID> -t <configfile>
 # Run as:          root
 #-------------------------------------------------------------------------
 # The configuration file has two sections [volumegroups] and [filesystems].

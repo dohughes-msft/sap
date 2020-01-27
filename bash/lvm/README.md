@@ -4,7 +4,7 @@ With the bash scripts in this folder you can automate the creation of volume gro
 
 ## Calling syntax
 ~~~~
-mkvglvfs.sh -s <SAPSID> -t <configfile>
+lvm4sap.sh -s <SAPSID> -t <configfile>
 ~~~~
 
 `<configfile>` is the path to the configuration file.

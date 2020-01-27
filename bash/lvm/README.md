@@ -2,6 +2,8 @@
 ## Introduction
 With the bash scripts in this folder you can automate the creation of volume groups, logical volumes, and filesystems for SAP systems. By providing a configuration file that describes the desired state you can finely control which filesystems are created and on which volumes and disks they are located. Filesystems are always striped across the maximum number of disks to achieve the best performance.
 
+![Alt](lvm4sap.png "lvm4sap")
+
 ## Calling syntax
 ~~~~
 lvm4sap.sh -s <SAPSID> -t <configfile>

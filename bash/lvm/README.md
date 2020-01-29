@@ -70,21 +70,7 @@ SIDbackupvg,SIDhanabackuplv,/hana/backup/SID,100
 
 The result in this case if we keep `SID = NH1` is:
 
-* Volume group `NH1sapvg` created on disk 0
-  * Logical volume `NH1usrsaplv` sized to use all space in the volume group
-    * Filesystem `/usr/sap/NH1`
-* Volume group `NH1datavg` created on disks 1-4
-  * Logical volume `NH1hanadatalv` sized to use all space in the volume group and striped across all disks
-    * Filesystem `/hana/data/NH1`
-* Volume group `NH1logvg` created on disks 5-6
-  * Logical volume `NH1hanaloglv` sized to use all space in the volume group and striped across all disks
-    * Filesystem `/hana/log/NH1`
-* Volume group `NH1sharedvg` created on disk 7
-  * Logical volume `NH1hanasharedlv` sized to use all space in the volume group
-    * Filesystem `/hana/shared/NH1`
-* Volume group `NH1backupvg` created on disks 8-9
-  * Logical volume `NH1hanabackuplv` sized to use all space in the volume group and striped across all disks
-    * Filesystem `/hana/backup/NH1`
+![Alt](m64s.png "M64s disk configuration")
 
 ## Pre-made configuration files
 In folder `diskconfig` you will find pre-made configuration files for HANA, AnyDB and application servers. The HANA configurations correspond to the Microsoft-recommended storage configurations found at:

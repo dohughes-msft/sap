@@ -166,9 +166,17 @@ start
 # Parse the configuration file and check that all is in order
 #-------------------------------------------------------------------------
 
+if ! grep -q '^\[volumegroups\]' $CONFIGFILE; then
+  log error "Section [volumegroups] not found in configuration file."
+  finish
+elif ! grep -q '^\[filesystems\]' $CONFIGFILE; then
+  log error "Section [filesystems] not found in configuration file."
+  finish
+fi
+
 VGS=$(grep -v ^# $CONFIGFILE | awk -v RS='' '/volumegroups/' | tail -n +2 | sed "s/SID/$SID/g" | sed "s/sid/$LSID/g")
 NUMDISKFILE=$(echo -n "$VGS" | grep -c '^')
-NUMDISKVM=$(ls -1 /dev/disk/azure/scsi1/lun* | wc -l)
+NUMDISKVM=$(ls -1 /dev/disk/azure/scsi1/lun* 2>/dev/null | wc -l)
 FILESYS=$(grep -v ^# $CONFIGFILE | awk -v RS='' '/filesystems/' | tail -n +2 | sed "s/SID/$SID/g" | sed "s/sid/$LSID/g")
 VGLIST1=$(echo "$VGS" | cut -d \, -f 2 | uniq)
 VGLIST2=$(echo "$FILESYS" | cut -d \, -f 1 | uniq)
@@ -183,7 +191,7 @@ if [[ $VGLIST1 != $VGLIST2 ]]; then
   done
   for VG in $VGLIST1; do
     if ! grep -q $VG <<<$VGLIST2; then
-      log warning "Volume group $VG in [volumegroups] does not appear in [filesystems]."
+      log warning "Volume group $VG in [volumegroups] does not appear in [filesystems]. The volume group will be created but not used."
     fi
   done
 fi
@@ -194,7 +202,14 @@ if [ $NUMDISKFILE -gt $NUMDISKVM ]; then
   finish
 elif [ $NUMDISKFILE -lt $NUMDISKVM ]; then
   log warning "The number of disks attached to the VM ($NUMDISKVM) is larger than the number of disks in the [volumegroups] section of the configuration file ($NUMDISKFILE)."
+  log warning "Some disks will remain unallocated."
 fi
+
+exit
+
+#-------------------------------------------------------------------------
+# Start the actual configuration
+#-------------------------------------------------------------------------
 
 # Create the volume groups
 log info "Creating volume groups..."
@@ -202,6 +217,7 @@ echo
 
 LUNCOUNT=1
 
+# Loop for creation of the volume groups
 echo "$VGS" | while IFS=, read LUN VG; do
   TOTALLUNS=$(grep ,$VG <<<"$VGS" | wc -l)
   if [ $TOTALLUNS -gt 1 ] ; then
@@ -230,6 +246,7 @@ echo
 # Backup fstab first
 cp -p /etc/fstab /etc/fstab.$(date +%Y%m%d%H%M)
 
+# Loop for creation of the logical volumes and filesystems
 echo "$FILESYS" | while IFS=, read VG LV FS SIZE; do
   NUMPV=$(vgs | grep $VG | awk '{print $2}')
   log info "Creating logical volume $LV..."

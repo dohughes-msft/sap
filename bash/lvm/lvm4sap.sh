@@ -177,6 +177,9 @@ fi
 VGS=$(grep -v ^# $CONFIGFILE | awk -v RS='' '/volumegroups/' | tail -n +2 | sed "s/SID/$SID/g" | sed "s/sid/$LSID/g")
 NUMDISKFILE=$(echo -n "$VGS" | grep -c '^')
 NUMDISKVM=$(ls -1 /dev/disk/azure/scsi1/lun* 2>/dev/null | wc -l)
+
+# Add a check that the LUN numbers are correct!
+
 FILESYS=$(grep -v ^# $CONFIGFILE | awk -v RS='' '/filesystems/' | tail -n +2 | sed "s/SID/$SID/g" | sed "s/sid/$LSID/g")
 VGLIST1=$(echo "$VGS" | cut -d \, -f 2 | uniq)
 VGLIST2=$(echo "$FILESYS" | cut -d \, -f 1 | uniq)
@@ -204,8 +207,6 @@ elif [ $NUMDISKFILE -lt $NUMDISKVM ]; then
   log warning "The number of disks attached to the VM ($NUMDISKVM) is larger than the number of disks in the [volumegroups] section of the configuration file ($NUMDISKFILE)."
   log warning "Some disks will remain unallocated."
 fi
-
-exit
 
 #-------------------------------------------------------------------------
 # Start the actual configuration

@@ -1,0 +1,127 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "netAppAccounts_anf_ac1_name": {
+            "defaultValue": "anf-ac1",
+            "type": "String"
+        },
+        "virtualNetworks_sapvnet1_externalid": {
+            "defaultValue": "/subscriptions/3e51b8f1-b856-4896-9a90-50ac02c27cf1/resourceGroups/sap-shared-rg1/providers/Microsoft.Network/virtualNetworks/sapvnet1",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.NetApp/netAppAccounts",
+            "apiVersion": "2019-11-01",
+            "name": "[parameters('netAppAccounts_anf_ac1_name')]",
+            "location": "westus2",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(parameters('netAppAccounts_anf_ac1_name'), '/anf-pool-ultra')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts', parameters('netAppAccounts_anf_ac1_name'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Ultra",
+                "size": 6597069766656
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(parameters('netAppAccounts_anf_ac1_name'), '/anf-pool-ultra/hanavm1-hana-data')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', parameters('netAppAccounts_anf_ac1_name'), 'anf-pool-ultra')]",
+                "[resourceId('Microsoft.NetApp/netAppAccounts', parameters('netAppAccounts_anf_ac1_name'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Ultra",
+                "creationToken": "hanavm1-hana-data",
+                "usageThreshold": 3758096384000,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[concat(parameters('virtualNetworks_sapvnet1_externalid'), '/subnets/AzureNetappFilesSubnet')]",
+                "mountTargets": [
+                    {
+                        "provisioningState": "",
+                        "mountTargetId": "9304ecd3-922f-07e3-51a7-a8ed7e601939",
+                        "fileSystemId": "9304ecd3-922f-07e3-51a7-a8ed7e601939",
+                        "startIp": "",
+                        "endIp": "",
+                        "gateway": "",
+                        "netmask": "",
+                        "subnet": "",
+                        "ipAddress": "10.1.4.4"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2019-11-01",
+            "name": "[concat(parameters('netAppAccounts_anf_ac1_name'), '/anf-pool-ultra/hanavm1-hana-log')]",
+            "location": "westus2",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', parameters('netAppAccounts_anf_ac1_name'), 'anf-pool-ultra')]",
+                "[resourceId('Microsoft.NetApp/netAppAccounts', parameters('netAppAccounts_anf_ac1_name'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Ultra",
+                "creationToken": "hanavm1-hana-log",
+                "usageThreshold": 2199023255552,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[concat(parameters('virtualNetworks_sapvnet1_externalid'), '/subnets/AzureNetappFilesSubnet')]",
+                "mountTargets": [
+                    {
+                        "provisioningState": "",
+                        "mountTargetId": "8e3ac005-54dc-d009-be3c-82e03cd669f0",
+                        "fileSystemId": "8e3ac005-54dc-d009-be3c-82e03cd669f0",
+                        "startIp": "",
+                        "endIp": "",
+                        "gateway": "",
+                        "netmask": "",
+                        "subnet": "",
+                        "ipAddress": "10.1.4.4"
+                    }
+                ]
+            }
+        }
+    ]
+}

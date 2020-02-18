@@ -6,7 +6,7 @@
         "exists": "false"
       },
       "then": {
-        "effect": "audit"
+        "effect": "[parameters('effectType')]"
       }
     },
     "parameters": {
@@ -16,6 +16,18 @@
           "displayName": "Tag Name",
           "description": "Name of the tag to audit"
         }
+      },
+      "effectType": {
+        "type": "String",
+        "metadata": {
+          "description": "The effect of failing the audit requirement.",
+          "displayName": "Effect"
+        },
+          "allowedValues": [
+              "audit",
+              "deny"
+          ],
+          "defaultValue": "audit"
+        }
       }
     }
-  }

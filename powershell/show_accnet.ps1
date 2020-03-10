@@ -1,7 +1,29 @@
-# This PowerShell script will print a list of NICs, VMs, and their accelerated networking status.
-# The current subscription context will be used unless parameter -allSubs is given in which case all accessible subscriptions will be examined.
+<#
+.SYNOPSIS
+    Display a list of VMs, NICs and their accelerated networking status
+.EXAMPLE
+    PS C:\> show_accnet.ps1
+.INPUTS
+    -allSubs : false if only the current subscription/context should be examined (default)
+               true if all available subscriptions in the current tenant should be examined
+.OUTPUTS
+    Display a list of VMs, NICs and their accelerated networking status
+.NOTES
+    None
+#>
 
-param ([switch]$allSubs)
+param (
+    [switch]$allSubs
+)
+
+function getVMs {
+    $script:result += Get-AzNetworkInterface `
+        | Select-Object `
+            @{n='Subscription';e={$sub.Name}}, `
+            @{n='NICName';e={$_.Name}}, `
+            @{n='VMName';e={$_.VirtualMachine.Id -replace '.*/'}}, `
+            EnableAcceleratedNetworking
+}
 
 if ($allSubs) {
     $context = Get-AzContext
@@ -9,12 +31,12 @@ if ($allSubs) {
     $subs = Get-AzSubscription -TenantId $tenantId
     foreach($sub in $subs) {
         $sub | Select-AzSubscription | Out-Null
-        Get-AzNetworkInterface | Select-Object @{n='NICName';e={$_.Name}}, EnableAcceleratedNetworking -ExpandProperty VirtualMachine | Select-Object @{n='Subscription';e={$sub.Name}}, NICName, @{n='VMName';e={$_.Id -replace '.*/'}}, EnableAcceleratedNetworking
-        
+        getVMs
     }
     Set-AzContext -SubscriptionId $context.Subscription.Id | Out-Null
-}
-else {
+} else {
     $sub = (Get-AzContext).Subscription
-    Get-AzNetworkInterface | Select-Object @{n='NICName';e={$_.Name}}, EnableAcceleratedNetworking -ExpandProperty VirtualMachine | Select-Object @{n='Subscription';e={$sub.Name}}, NICName, @{n='VMName';e={$_.Id -replace '.*/'}}, EnableAcceleratedNetworking
+    getVMs
 }
+
+$result | Format-Table -AutoSize

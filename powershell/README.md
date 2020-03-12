@@ -1,6 +1,6 @@
 # PowerShell scripts
 ## Introduction
-With the PowerShell scripts in this folder you can check that your Azure resources have the required configuration. All resources in the tenant (i.e. across all subscriptions) are examined.
+With the PowerShell scripts in this folder you can check that your Azure resources have the required configuration.
 
 | Script | Use |
 | ----------- | ----------- |
@@ -9,9 +9,13 @@ With the PowerShell scripts in this folder you can check that your Azure resourc
 | `show_diskcaching.ps1` | Show the caching and write accelerator settings for all disks |
 | `show_nsg_nic.ps1` | Show the NSG assignments for all NICs |
 | `show_nsg_subnet.ps1` | Show the NSG assignments for all subnets |
+| `show_ppg_avset.ps1` | Show the PPG assignments for all AvSets |
+| `show_ppg_vm.ps1` | Show the PPG assignments for all VMs |
+| `show_quotas.ps1` | Show quota current usage and limits for given subscriptions |
+| `show_suse_vm_cores.ps1` | Show the number of cores per VM and how many SUSE licenses are needed |
 
 ## Calling syntax
-Simply call the chosen script from the PowerShell prompt without any parameters.
+Most scripts take only a boolean parameter `-allSubs`. Without this parameter, only the current subscription is in scope. With this parameter, all subscriptions are in scope.
 
 ## Example - Show the accelerated networking status of all VMs
 ~~~~

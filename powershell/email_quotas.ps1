@@ -7,10 +7,6 @@
 .INPUTS
     -threshold <nn>              : the limit in % above which a warning will be shown in the status column
     -credentialName <credential> : the name of the credential stored in Azure Automation for the SMTP server
-    -smtpServer <server>         : the FQDN of the SMTP server
-    -sender <email>              : email address of the sender
-    -recipients <email, email>   : comma-separated list of recipients
-    -subject <subject>           : subject of the mail
     $inputs                      : an inline variable in JSON format containing a list of subscriptions and locations that are in scope
 
     Example:
@@ -41,10 +37,8 @@
 param(
     [int]$threshold=70,
     [string]$credentialName="smtp",
-    [string]$smtpServer="smtp.gmail.com",
-    [string]$sender="contact@donovanhughes.com",
-    [string]$recipients="dohughes@microsoft.com, don@donovanhughes.com",
-    [string]$subject="Monthly quota report from Microsoft Azure"
+    [Parameter(Mandatory=$true)][string]$sender,
+    [Parameter(Mandatory=$true)][string]$recipients
 )
 
 #Microsoft
@@ -55,6 +49,16 @@ $inputs = '{
         "westus2"
     ]
 }'
+
+# SMTP server information - use TLS port
+
+# Gmail
+$smtpServer="smtp.gmail.com"
+# Office 365
+# $smtpServer="smtp.office365.com"
+
+$smtpPort=587
+$subject="Monthly quota report from Microsoft Azure"
 
 $inputsJson = $inputs | ConvertFrom-Json
 $cred = Get-AutomationPSCredential -Name $credentialName
@@ -100,4 +104,4 @@ $preamble = "Warnings are shown when quota usage exceeds $threshold%.<br><br>"
 $mailBody = $resultSet | ConvertTo-Html -Head $style -PreContent $preamble | Out-String
 $toList = $recipients -split ","
 
-Send-MailMessage -To $toList -Subject $subject -Body $mailBody -UseSsl -Port 587 -SmtpServer $smtpServer -From $sender -BodyAsHtml -Credential $cred
+Send-MailMessage -To $toList -Subject $subject -Body $mailBody -UseSsl -Port $smtpPort -SmtpServer $smtpServer -From $sender -BodyAsHtml -Credential $cred

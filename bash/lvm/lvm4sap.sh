@@ -7,6 +7,8 @@
 # Syntax:          lvm4sap.sh -s <SID> -t <configfile>
 # Run as:          root
 #-------------------------------------------------------------------------
+# The configuration file can be either a local file on the VM or a network file accessed via http/https.
+#
 # The configuration file has two sections [volumegroups] and [filesystems].
 # [volumegroups] contains a comma-separated list of LUNs and the volume groups they will be assigned to.
 # [filesystems] contains a comma-separated list of volume groups, logical volumes, filesystems and sizes.
@@ -144,7 +146,6 @@ s)
   typeset -l LSID=$OPTARG
   typeset -u SID=$OPTARG ;;
 t)
-  [[ ! -f $OPTARG ]] && log error "File $OPTARG does not exist." && exit 255
   CONFIGFILE=$OPTARG ;;
 \?)
   usage ;;
@@ -155,6 +156,20 @@ done
 
 [[ $SID == "" ]] && usage
 [[ $CONFIGFILE == "" ]] && usage
+
+if [[ $CONFIGFILE = https://* || $CONFIGFILE = http://* ]]; then
+  # File is a network file so download a temporary copy
+  TMPFILE=/tmp/lvm4sap.tmp.$$
+  curl -f -s $CONFIGFILE > $TMPFILE
+  if [[ $? -ne 0 ]]; then
+    log error "Error accessing configuration file URI. Please check that this file is reachable from the VM."
+    rm $TMPFILE
+    exit 255
+  fi
+  CONFIGFILE=$TMPFILE
+else
+  [[ ! -f $CONFIGFILE ]] && log error "File $CONFIGFILE does not exist." && exit 255
+fi
 
 #-------------------------------------------------------------------------
 # Start the main script
@@ -263,5 +278,7 @@ echo "$FILESYS" | while IFS=, read VG LV FS SIZE; do
   log info "Mounting filesystem $FS..."
   mount $FS
 done
+
+[[ -n "$TMPFILE" ]] && rm $TMPFILE
 
 finish

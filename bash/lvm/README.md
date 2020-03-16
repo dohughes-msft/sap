@@ -18,6 +18,8 @@ lvm4sap.sh -s <SAPSID> -t <configfile>
 Examples:
 ~~~~
 lvm4sap.sh -s NH1 -t /sapmedia/scripts/disk/hana_prod_m32ts
+~~~~
+~~~~
 lvm4sap.sh -s ND1 -t https://raw.githubusercontent.com/dohughes-msft/sap/master/bash/lvm/diskconfig/db2_standard
 ~~~~
 

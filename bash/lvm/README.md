@@ -11,9 +11,15 @@ With the bash scripts in this folder you can automate the creation of volume gro
 lvm4sap.sh -s <SAPSID> -t <configfile>
 ~~~~
 
-`<configfile>` is the path to the configuration file.
+`<configfile>` is the path to the configuration file. This can be a local file or a file accessible via http/https.
 
 `<SAPSID>` is the SID of the SAP system. Wherever the program finds "SID" or "sid" in the configuration file, it will replace them with this value.
+
+Examples:
+~~~~
+lvm4sap.sh -s NH1 -t /sapmedia/scripts/disk/hana_prod_m32ts
+lvm4sap.sh -s ND1 -t https://raw.githubusercontent.com/dohughes-msft/sap/master/bash/lvm/diskconfig/db2_standard
+~~~~
 
 ## Configuration file
 The configuration file must contain two sections with an empty line inbetween.

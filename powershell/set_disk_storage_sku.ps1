@@ -9,11 +9,11 @@
 .INPUTS
     -resourceGroupName <group> : the resource group containing the VM(s) to operate on
     -sku <sku>                 : the storage SKU - Standard_LRS, StandardSSD_LRS, Premium_LRS, UltraSSD_LRS
-    -vmName <vm>               : (optional) the VM on which to operate - default all VMs in the resource group
+    -vmName <vm>               : (optional) the VM on which to operate - default is all VMs in the resource group
 .OUTPUTS
     The list of disks that had their SKU changed.
 .NOTES
-    Specify the resource group containing the virtual machines, not the disks.
+    Specify the resource group containing the virtual machines, not the disks. VMs must be deallocated.
 #>
 
 param(

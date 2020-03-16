@@ -4,6 +4,7 @@ With the PowerShell scripts in this folder you can check that your Azure resourc
 
 | Script | Use |
 | ----------- | ----------- |
+| `set_disk_storage_sku.ps1` | Change the storage SKU of all disks for VM(s) in a given resource group |
 | `show_accnet.ps1` | Show the status of accelerated networking for all NICs |
 | `show_asg.ps1` | Show the ASG assignments for all VMs |
 | `show_diskcaching.ps1` | Show the caching and write accelerator settings for all disks |

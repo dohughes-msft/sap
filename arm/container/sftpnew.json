@@ -1,0 +1,171 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "storageAccountResourceGroup": {
+            "type": "string",
+            "defaultValue": "sftp-rg2",
+            "metadata": {
+                "description": "Resource group for existing storage account"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "defaultValue": "sftpaccount1",
+            "metadata": {
+                "description": "Name of existing storage account"
+            }
+        },
+        "dataFileShareName": {
+            "type": "string",
+            "defaultValue": "sftpshare1",
+            "metadata": {
+                "description": "Name of existing file share to be mounted"
+            }
+        },
+        "configFileShare": {
+            "type": "string",
+            "defaultValue": "config",
+            "metadata": {
+                "description": "Name of existing file share to be mounted"
+            }
+        },
+        "sftpdFileShare": {
+            "type": "string",
+            "defaultValue": "sftpd",
+            "metadata": {
+                "description": "Name of existing file share to be mounted"
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Primary location for resources"
+            }
+        },
+        "containerGroupDNSLabel": {
+            "type": "string",
+            "defaultValue": "[uniqueString(resourceGroup().id, deployment().name)]",
+            "metadata" : {
+                "description": "DNS label for container group"
+            }
+        }
+    },
+    "variables": {
+        "sftpContainerName": "sftp-new",
+        "sftpContainerGroupName": "sftp-group-new",
+        "sftpContainerImage": "atmoz/sftp:latest",
+        "storageAccountId": "[resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Resources/deployments",
+            "name": "pid-18f281fe-d1e1-502c-8b87-d945383dc75b",
+            "apiVersion": "2018-05-01",
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": []
+                }
+            }
+        },
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "name": "[variables('sftpContainerGroupName')]",
+            "apiVersion": "2018-10-01",
+            "location": "[parameters('location')]",
+            "properties": {
+                "containers": [
+                    {
+                        "name": "[variables('sftpContainerName')]",
+                        "properties": {
+                            "image": "[variables('sftpContainerImage')]",
+                            "resources": {
+                                "requests": {
+                                    "cpu": 2,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "port": 22
+                                }
+                            ],
+                            "volumeMounts": [
+                                {
+                                    "mountPath": "[concat('/etc/sftp')]",
+                                    "name": "config",
+                                    "readOnly": false
+                                },
+                                {
+                                    "mountPath": "[concat('/etc/sftp.d')]",
+                                    "name": "sftpd",
+                                    "readOnly": false
+                                }
+                            ]
+                        }
+                    }
+                ],
+                "osType": "Linux",
+                "ipAddress": {
+                    "type": "Public",
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 22
+                        }
+                    ],
+                    "dnsNameLabel": "[parameters('containerGroupDNSLabel')]"
+                },
+                "restartPolicy": "OnFailure",
+                "volumes": [
+                    {
+                        "name": "sftpvolume1",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[parameters('dataFileShareName')]",
+                            "storageAccountName": "[parameters('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
+                        }
+                    },
+                    {
+                        "name": "sftpvolume2",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[parameters('existingFileShareName2')]",
+                            "storageAccountName": "[parameters('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
+                        }
+                    },
+                    {
+                        "name": "config",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[parameters('configFileShare')]",
+                            "storageAccountName": "[parameters('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
+                        }
+                    },
+                    {
+                        "name": "sftpd",
+                        "azureFile": {
+                            "readOnly": false,
+                            "shareName": "[parameters('sftpdFileShare')]",
+                            "storageAccountName": "[parameters('storageAccountName')]",
+                            "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
+                        }
+                    }
+                ]
+            }
+        }
+    ],
+    "outputs": {
+        "containerDNSLabel": {
+            "type": "string",
+            "value": "[concat(parameters('containerGroupDNSLabel'), '.', parameters('location'), '.azurecontainer.io')]"
+        }
+    }
+}

@@ -1,40 +1,59 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
-        "storageAccountResourceGroup": {
+        "existingStorageAccountResourceGroupName": {
             "type": "string",
             "defaultValue": "sftp-rg2",
             "metadata": {
                 "description": "Resource group for existing storage account"
             }
         },
-        "storageAccountName": {
+        "existingStorageAccountName": {
             "type": "string",
             "defaultValue": "sftpaccount1",
             "metadata": {
                 "description": "Name of existing storage account"
             }
         },
-        "dataFileShareName": {
+        "existingFileShareName1": {
             "type": "string",
-            "defaultValue": "sftpshare1",
+            "defaultValue": "s10",
             "metadata": {
                 "description": "Name of existing file share to be mounted"
             }
         },
-        "configFileShare": {
+        "existingFileShareName2": {
             "type": "string",
-            "defaultValue": "config",
+            "defaultValue": "d10",
             "metadata": {
                 "description": "Name of existing file share to be mounted"
             }
         },
-        "sftpdFileShare": {
+        "sftpUser1": {
             "type": "string",
-            "defaultValue": "sftpd",
+            "defaultValue": "s10ftp",
             "metadata": {
-                "description": "Name of existing file share to be mounted"
+                "description": "Username to use for SFTP access"
+            }
+        },
+        "sftpPassword1": {
+            "type": "string",
+            "metadata": {
+                "description": "Password to use for SFTP access"
+            }
+        },
+        "sftpUser2": {
+            "type": "string",
+            "defaultValue": "d10ftp",
+            "metadata": {
+                "description": "Username to use for SFTP access"
+            }
+        },
+        "sftpPassword2": {
+            "type": "string",
+            "metadata": {
+                "description": "Password to use for SFTP access"
             }
         },
         "location": {
@@ -53,10 +72,13 @@
         }
     },
     "variables": {
-        "sftpContainerName": "sftp-new",
-        "sftpContainerGroupName": "sftp-group-new",
+        "sftpContainerName": "sftp",
+        "sftpContainerGroupName": "sftp-group",
         "sftpContainerImage": "atmoz/sftp:latest",
-        "storageAccountId": "[resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
+        "sftpEnvVar1": "[concat(parameters('sftpUser1'), ':', parameters('sftpPassword1'), ':1001')]",
+        "sftpEnvVar2": "[concat(parameters('sftpUser2'), ':', parameters('sftpPassword2'), ':1002')]",
+        "sftpEnvVariable": "[concat(variables('sftpEnvVar1'), ' ', variables('sftpEnvVar2'))]",
+        "storageAccountId": "[resourceId(parameters('existingStorageAccountResourceGroupName'), 'Microsoft.Storage/storageAccounts', parameters('existingStorageAccountName'))]"
     },
     "resources": [
         {
@@ -83,6 +105,12 @@
                         "name": "[variables('sftpContainerName')]",
                         "properties": {
                             "image": "[variables('sftpContainerImage')]",
+                            "environmentVariables": [
+                                {
+                                    "name": "SFTP_USERS",
+                                    "value": "[variables('sftpEnvVariable')]"
+                                }
+                            ],
                             "resources": {
                                 "requests": {
                                     "cpu": 2,
@@ -96,13 +124,13 @@
                             ],
                             "volumeMounts": [
                                 {
-                                    "mountPath": "[concat('/etc/sftp')]",
-                                    "name": "config",
+                                    "mountPath": "[concat('/home/', parameters('sftpUser1'), '/jarvis')]",
+                                    "name": "sftpvolume1",
                                     "readOnly": false
                                 },
                                 {
-                                    "mountPath": "[concat('/etc/sftp.d')]",
-                                    "name": "sftpd",
+                                    "mountPath": "[concat('/home/', parameters('sftpUser2'), '/jarvis')]",
+                                    "name": "sftpvolume2",
                                     "readOnly": false
                                 }
                             ]
@@ -126,8 +154,8 @@
                         "name": "sftpvolume1",
                         "azureFile": {
                             "readOnly": false,
-                            "shareName": "[parameters('dataFileShareName')]",
-                            "storageAccountName": "[parameters('storageAccountName')]",
+                            "shareName": "[parameters('existingFileShareName1')]",
+                            "storageAccountName": "[parameters('existingStorageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
                         }
                     },
@@ -136,25 +164,7 @@
                         "azureFile": {
                             "readOnly": false,
                             "shareName": "[parameters('existingFileShareName2')]",
-                            "storageAccountName": "[parameters('storageAccountName')]",
-                            "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
-                        }
-                    },
-                    {
-                        "name": "config",
-                        "azureFile": {
-                            "readOnly": false,
-                            "shareName": "[parameters('configFileShare')]",
-                            "storageAccountName": "[parameters('storageAccountName')]",
-                            "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
-                        }
-                    },
-                    {
-                        "name": "sftpd",
-                        "azureFile": {
-                            "readOnly": false,
-                            "shareName": "[parameters('sftpdFileShare')]",
-                            "storageAccountName": "[parameters('storageAccountName')]",
+                            "storageAccountName": "[parameters('existingStorageAccountName')]",
                             "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
                         }
                     }

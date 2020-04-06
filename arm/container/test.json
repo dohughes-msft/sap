@@ -1,0 +1,121 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vnetResourceGroup": {
+            "type": "string",
+            "defaultValue": "sftp-rg2",
+            "metadata": {
+                "description": "Resource group of the VNET"
+            }
+        },
+        "vnetName": {
+            "type": "string",
+            "defaultValue": "sap-vnet",
+            "metadata": {
+                "description": "VNET name"
+            }
+        },
+        "subnetName": {
+            "type": "string",
+            "defaultValue": "sftp-subnet",
+            "metadata": {
+                "description": "Subnet name"
+            }
+        },
+        "storageAccountResourceGroup": {
+            "type": "string",
+            "defaultValue": "sftp-rg2",
+            "metadata": {
+                "description": "Resource group for existing storage account"
+            }
+        },
+        "storageAccountName": {
+            "type": "string",
+            "defaultValue": "sftpaccount1",
+            "metadata": {
+                "description": "Name of existing storage account"
+            }
+        },
+        "keyVaultResourceGroup": {
+            "type": "string",
+            "defaultValue": "sftp-rg2",
+            "metadata": {
+                "description": "Resource group of the key vault"
+            }
+        },
+        "keyVaultName": {
+            "type": "string",
+            "defaultValue": "sftp-kv1",
+            "metadata": {
+                "description": "Name of the key vault"
+            }
+        },
+        "users": {
+            "type": "array",
+            "metadata": {
+                "description": "An array of JSON objects containing users, passwords and fileshare names"
+            }
+        },
+        "test": {
+            "type": "string"
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "sftpContainerName": "sftp",
+        "sftpContainerGroupName": "sftp-group",
+        "sftpContainerImage": "atmoz/sftp:latest",
+        "storageAccountId": "[resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
+        "vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
+        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "keyVaultId": "[resourceId(parameters('keyVaultResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
+        "credentials": [
+            {
+                "user": "s10ftp",
+                "password": {
+                    "reference": {
+                        "keyVault": {
+                            "id": "[variables('keyVaultId')]"
+                        },
+                        "secretName": "s10ftp"
+                    }
+                },
+                "fileshare": "s10"
+            },
+            {
+                "user": "d10ftp",
+                "password": "d10pass",
+                "fileshare": "d10"
+            },
+            {
+                "user": "t10ftp",
+                "password": "t10pass",
+                "fileshare": "t10"
+            }
+        ],
+        "copy": [
+            {
+                "name": "credArray",
+                "count": "[length(parameters('users'))]",
+                "input": "[concat(parameters('users')[copyIndex('credArray')].user, ':', string(parameters('users')[copyIndex('credArray')].password))]"
+            }
+        ],
+        "credString": "[replace(replace(replace(replace(string(variables('credArray')), '\"', ''), ',', ' '), '[', ''), ']', '')]"
+    },
+    "resources": [],
+    "outputs": {
+        "credentialArray": {
+            "type": "array",
+            "value": "[variables('credArray')]"
+        },
+        "credentialString": {
+            "type": "string",
+            "value": "[variables('credString')]"
+        },
+        "test": {
+            "type": "securestring",
+            "value": "[string(parameters('test'))]"
+        }
+    }
+}

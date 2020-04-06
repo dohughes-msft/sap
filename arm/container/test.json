@@ -4,51 +4,34 @@
     "parameters": {
         "vnetResourceGroup": {
             "type": "string",
-            "defaultValue": "sftp-rg2",
+            "defaultValue": "[resourceGroup().name]",
             "metadata": {
                 "description": "Resource group of the VNET"
             }
         },
         "vnetName": {
             "type": "string",
-            "defaultValue": "sap-vnet",
             "metadata": {
                 "description": "VNET name"
             }
         },
         "subnetName": {
             "type": "string",
-            "defaultValue": "sftp-subnet",
             "metadata": {
                 "description": "Subnet name"
             }
         },
         "storageAccountResourceGroup": {
             "type": "string",
-            "defaultValue": "sftp-rg2",
+            "defaultValue": "[resourceGroup().name]",
             "metadata": {
                 "description": "Resource group for existing storage account"
             }
         },
         "storageAccountName": {
             "type": "string",
-            "defaultValue": "sftpaccount1",
             "metadata": {
                 "description": "Name of existing storage account"
-            }
-        },
-        "keyVaultResourceGroup": {
-            "type": "string",
-            "defaultValue": "sftp-rg2",
-            "metadata": {
-                "description": "Resource group of the key vault"
-            }
-        },
-        "keyVaultName": {
-            "type": "string",
-            "defaultValue": "sftp-kv1",
-            "metadata": {
-                "description": "Name of the key vault"
             }
         },
         "users": {
@@ -56,44 +39,18 @@
             "metadata": {
                 "description": "An array of JSON objects containing users, passwords and fileshare names"
             }
-        },
-        "test": {
-            "type": "string"
         }
     },
     "variables": {
         "location": "[resourceGroup().location]",
-        "sftpContainerName": "sftp",
-        "sftpContainerGroupName": "sftp-group",
+        "containerGroupName": "sftp-group",
+        "sftpContainerName": "sftp-container",
         "sftpContainerImage": "atmoz/sftp:latest",
+        "passwdContainerName": "pass-container",
+        "passwdContainerImage": "d0nsk1/mkpasswd:latest",
         "storageAccountId": "[resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
         "vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
         "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
-        "keyVaultId": "[resourceId(parameters('keyVaultResourceGroup'), 'Microsoft.KeyVault/vaults', parameters('keyVaultName'))]",
-        "credentials": [
-            {
-                "user": "s10ftp",
-                "password": {
-                    "reference": {
-                        "keyVault": {
-                            "id": "[variables('keyVaultId')]"
-                        },
-                        "secretName": "s10ftp"
-                    }
-                },
-                "fileshare": "s10"
-            },
-            {
-                "user": "d10ftp",
-                "password": "d10pass",
-                "fileshare": "d10"
-            },
-            {
-                "user": "t10ftp",
-                "password": "t10pass",
-                "fileshare": "t10"
-            }
-        ],
         "copy": [
             {
                 "name": "credArray",
@@ -103,19 +60,126 @@
         ],
         "credString": "[replace(replace(replace(replace(string(variables('credArray')), '\"', ''), ',', ' '), '[', ''), ']', '')]"
     },
-    "resources": [],
-    "outputs": {
-        "credentialArray": {
-            "type": "array",
-            "value": "[variables('credArray')]"
+    "resources": [
+        {
+            "name": "[concat(variables('containerGroupName'), '-networkprofile')]",
+            "type": "Microsoft.Network/networkProfiles",
+            "apiVersion": "2019-11-01",
+            "location": "[variables('location')]",
+            "dependsOn": [],
+            "properties": {
+                "containerNetworkInterfaceConfigurations": [
+                    {
+                        "name": "eth0",
+                        "properties": {
+                            "ipConfigurations": [
+                                {
+                                    "name": "ipconfig1",
+                                    "properties": {
+                                        "subnet": {
+                                            "id": "[variables('subnetId')]"
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
         },
-        "credentialString": {
-            "type": "string",
-            "value": "[variables('credString')]"
-        },
-        "test": {
-            "type": "securestring",
-            "value": "[string(parameters('test'))]"
+        {
+            "type": "Microsoft.ContainerInstance/containerGroups",
+            "name": "[variables('containerGroupName')]",
+            "apiVersion": "2018-10-01",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(variables('containerGroupName'), '-networkprofile')]"
+            ],
+            "properties": {
+                "containers": [
+                    {
+                        "name": "[variables('sftpContainerName')]",
+                        "properties": {
+                            "image": "[variables('sftpContainerImage')]",
+                            "environmentVariables": [
+                                {
+                                    "name": "SFTP_USERS",
+                                    "value": "[variables('credString')]"
+                                }
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "cpu": 1,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "ports": [
+                                {
+                                    "port": 22
+                                }
+                            ],
+                            "copy": [
+                                {
+                                    "name": "volumeMounts",
+                                    "count": "[length(parameters('users'))]",
+                                    "input": {
+                                        "mountPath": "[concat('/home/', parameters('users')[copyIndex('volumeMounts')].user, '/jarvis')]",
+                                        "name": "[concat('volume', copyIndex('volumeMounts'))]",
+                                        "readOnly": false
+                                    }
+                                }
+                            ]
+                        }
+                    },
+                    {
+                        "name": "[variables('passwdContainerName')]",
+                        "properties": {
+                            "image": "[variables('passwdContainerImage')]",
+                            "command": [
+                                "sleep",
+                                "99999"
+                            ],
+                            "resources": {
+                                "requests": {
+                                    "cpu": 1,
+                                    "memoryInGB": 1
+                                }
+                            },
+                            "ports": []
+                        }
+                    }
+                ],
+                "osType": "Linux",
+                "networkProfile": {
+                    "Id": "[resourceId('Microsoft.Network/networkProfiles', concat(variables('containerGroupName'), '-networkprofile'))]"
+                },
+                "ipAddress": {
+                    "type": "Private",
+                    "ports": [
+                        {
+                            "protocol": "TCP",
+                            "port": 22
+                        }
+                    ]
+                },
+                "restartPolicy": "OnFailure",
+                "copy": [
+                    {
+                        "name": "volumes",
+                        "count": "[length(parameters('users'))]",
+                        "input": {
+                            "name": "[concat('volume', copyIndex('volumes'))]",
+                            "azureFile": {
+                                "readOnly": false,
+                                "shareName": "[parameters('users')[copyIndex('volumes')].fileshare]",
+                                "storageAccountName": "[parameters('storageAccountName')]",
+                                "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
+                            }
+                        }
+                    }
+                ]
+            }
         }
-    }
+    ],
+    "outputs": {}
 }

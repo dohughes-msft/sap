@@ -82,19 +82,6 @@
     },
     "resources": [
         {
-            "type": "Microsoft.Resources/deployments",
-            "name": "pid-18f281fe-d1e1-502c-8b87-d945383dc75b",
-            "apiVersion": "2018-05-01",
-            "properties": {
-                "mode": "Incremental",
-                "template": {
-                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
-                    "contentVersion": "1.0.0.0",
-                    "resources": []
-                }
-            }
-        },
-        {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[variables('sftpContainerGroupName')]",
             "apiVersion": "2018-10-01",

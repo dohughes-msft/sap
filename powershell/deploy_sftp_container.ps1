@@ -11,7 +11,7 @@ $envVar.Add('SFTP_USERS', $users)
 
 $storageAccountName = "sftpaccount1"
 $shareName = "sftpshare1"
-$key = "punZbW3tGK+09BlGyzMlEb567i62vmaSYD143+Ep37BuREpvVcIq6lk7Xz0ZYz8Vns/N4XKr31DyebevPAPfag=="
+$key = "xxxx"
 $encryptedKey = ConvertTo-SecureString $key -AsPlainText -Force
 $credential = New-Object System.Management.Automation.PSCredential ($storageAccountName, $encryptedKey)
 

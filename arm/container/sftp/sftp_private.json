@@ -18,7 +18,7 @@
         "subnetName": {
             "type": "string",
             "metadata": {
-                "description": "Subnet name"
+                "description": "Subnet name. Important: must be delegated to Microsoft.ContainerInstance/containerGroups"
             }
         },
         "storageAccountResourceGroup": {
@@ -55,10 +55,11 @@
             {
                 "name": "credArray",
                 "count": "[length(parameters('users'))]",
-                "input": "[concat(parameters('users')[copyIndex('credArray')].user, ':', string(parameters('users')[copyIndex('credArray')].password))]"
+                "input": "[concat(parameters('users')[copyIndex('credArray')].user, ':', parameters('users')[copyIndex('credArray')].password)]"
             }
         ],
-        "credString": "[replace(replace(replace(replace(string(variables('credArray')), '\"', ''), ',', ' '), '[', ''), ']', '')]"
+        "credString": "[replace(replace(replace(replace(string(variables('credArray')), '\"', ''), ',', ' '), '[', ''), ']', '')]",
+        "homeSubdir": "/jarvis"
     },
     "resources": [
         {
@@ -123,7 +124,7 @@
                                     "name": "volumeMounts",
                                     "count": "[length(parameters('users'))]",
                                     "input": {
-                                        "mountPath": "[concat('/home/', parameters('users')[copyIndex('volumeMounts')].user, '/jarvis')]",
+                                        "mountPath": "[concat('/home/', parameters('users')[copyIndex('volumeMounts')].user, variables('homeSubdir'))]",
                                         "name": "[concat('volume', copyIndex('volumeMounts'))]",
                                         "readOnly": false
                                     }
@@ -135,21 +136,14 @@
                         "name": "[variables('passwdContainerName')]",
                         "properties": {
                             "image": "[variables('passwdContainerImage')]",
-                            "command": [
-                                "sleep",
-                                "99999"
-                            ],
+                            "command": [],
                             "resources": {
                                 "requests": {
                                     "cpu": 1,
                                     "memoryInGB": 1
                                 }
                             },
-                            "ports": [
-                                {
-                                    "port": 2222
-                                }
-                            ]
+                            "ports": []
                         }
                     }
                 ],
@@ -175,7 +169,7 @@
                             "name": "[concat('volume', copyIndex('volumes'))]",
                             "azureFile": {
                                 "readOnly": false,
-                                "shareName": "[parameters('users')[copyIndex('volumes')].fileshare]",
+                                "shareName": "[parameters('users')[copyIndex('volumes')].fileShare]",
                                 "storageAccountName": "[parameters('storageAccountName')]",
                                 "storageAccountKey": "[listKeys(variables('storageAccountId'),'2018-02-01').keys[0].value]"
                             }
@@ -185,5 +179,10 @@
             }
         }
     ],
-    "outputs": {}
+    "outputs": {
+        "containerGroupIpAddress": {
+            "type": "string",
+            "value": "[reference(variables('containerGroupName')).ipAddress.ip]"
+        }
+    }
 }

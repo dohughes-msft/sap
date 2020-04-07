@@ -22,17 +22,17 @@
                 {
                     "user": "s10ftp",
                     "password": "$6$iwLguP1MdHcF0AqH$eYgQkc1e0ooAabImi.HWTk7/d0q/V0itA7yylM8TtQdzMTBLtY9DYkfJAwEyoCZrNus0NWQFmcGWeLTy7emYF/:e",
-                    "fileshare": "s10"
+                    "fileShare": "s10"
                 },
                 {
                     "user": "d10ftp",
                     "password": "$6$sbUcOU.YAp5/nDb8$8/veeaXhrrnEkxsSimPH5Cq5t3eJiWGnLgARa560HMHKMvJzafedtzgzUGMpb4deoHMjpLwpZ1mfb9BRBfUvX0:e",
-                    "fileshare": "d10"
+                    "fileShare": "d10"
                 },
                 {
                     "user": "t10ftp",
                     "password": "$6$h.jrHCB2mgcZ2S7B$1/YbN/LOYdL4mnGVIpUKunMVT9Qgqa89Wy7BbDbSKPWXEVt1AGBg95uQ24dk0MYQbVMYT2ohyXJp13fLImOZP1:e",
-                    "fileshare": "t10"
+                    "fileShare": "t10"
                 }
             ]
         }

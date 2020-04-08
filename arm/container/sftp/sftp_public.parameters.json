@@ -3,16 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "containerGroupName": {
-            "value": "sftp-private-group"
+            "value": "sftp-public-group"
         },
-        "vnetResourceGroup": {
-            "value": "sftp-rg2"
-        },
-        "vnetName": {
-            "value": "sap-vnet"
-        },
-        "subnetName": {
-            "value": "sftp-subnet"
+        "containerGroupDnsLabel": {
+            "value": "mycompany-sftp"
         },
         "storageAccountResourceGroup": {
             "value": "sftp-rg2"

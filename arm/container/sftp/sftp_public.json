@@ -8,23 +8,10 @@
                 "description": "The name of the container group"
             }
         },
-        "vnetResourceGroup": {
-            "type": "string",
-            "defaultValue": "[resourceGroup().name]",
-            "metadata": {
-                "description": "Resource group of the VNET"
-            }
-        },
-        "vnetName": {
+        "containerGroupDnsLabel": {
             "type": "string",
             "metadata": {
-                "description": "VNET name"
-            }
-        },
-        "subnetName": {
-            "type": "string",
-            "metadata": {
-                "description": "Subnet name. Important: must be delegated to Microsoft.ContainerInstance/containerGroups"
+                "description": "The DNS label for the container group"
             }
         },
         "storageAccountResourceGroup": {
@@ -52,9 +39,7 @@
         "sftpContainerName": "sftp-container",
         "sftpContainerImage": "atmoz/sftp:latest",
         "storageAccountId": "[resourceId(parameters('storageAccountResourceGroup'), 'Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]",
-        "mountPoint": "/upload",        
-        "vnetId": "[resourceId(parameters('vnetResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('vnetName'))]",
-        "subnetId": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
+        "mountPoint": "/upload",
         "copy": [
             {
                 "name": "credArray",
@@ -66,39 +51,10 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('containerGroupName'), '-networkprofile')]",
-            "type": "Microsoft.Network/networkProfiles",
-            "apiVersion": "2019-11-01",
-            "location": "[variables('location')]",
-            "dependsOn": [],
-            "properties": {
-                "containerNetworkInterfaceConfigurations": [
-                    {
-                        "name": "eth0",
-                        "properties": {
-                            "ipConfigurations": [
-                                {
-                                    "name": "ipconfig1",
-                                    "properties": {
-                                        "subnet": {
-                                            "id": "[variables('subnetId')]"
-                                        }
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-            }
-        },
-        {
             "type": "Microsoft.ContainerInstance/containerGroups",
             "name": "[parameters('containerGroupName')]",
             "apiVersion": "2018-10-01",
             "location": "[variables('location')]",
-            "dependsOn": [
-                "[concat(parameters('containerGroupName'), '-networkprofile')]"
-            ],
             "properties": {
                 "containers": [
                     {
@@ -137,17 +93,15 @@
                     }
                 ],
                 "osType": "Linux",
-                "networkProfile": {
-                    "Id": "[resourceId('Microsoft.Network/networkProfiles', concat(parameters('containerGroupName'), '-networkprofile'))]"
-                },
                 "ipAddress": {
-                    "type": "Private",
+                    "type": "Public",
                     "ports": [
                         {
                             "protocol": "TCP",
                             "port": 22
                         }
-                    ]
+                    ],
+                    "dnsNameLabel": "[parameters('containerGroupDnsLabel')]"
                 },
                 "restartPolicy": "OnFailure",
                 "copy": [
@@ -169,9 +123,9 @@
         }
     ],
     "outputs": {
-        "containerGroupIpAddress": {
+        "containerDNSLabel": {
             "type": "string",
-            "value": "[reference(parameters('containerGroupName')).ipAddress.ip]"
+            "value": "[concat(parameters('containerGroupDNSLabel'), '.', variables('location'), '.azurecontainer.io')]"
         }
     }
 }

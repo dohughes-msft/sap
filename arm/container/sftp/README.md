@@ -64,7 +64,7 @@ $6$isJXoOazUKjnH$N8H3Q2G95hv.k3fGufPg4GwCeHNTtL9rDUlcAZY3ipMGezHCwu/3VCuAEG5xuVj
 
 **Important:** Append suffix ":e" to the value when you add it to the parameter file.
 
-If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template `mkpasswd.json` to do this. Connect to the container through Azure Portal.
+If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [mkpasswd.json](../mkpasswd.json) to do this. Connect to the container through Azure Portal.
 
 ## Working example
 

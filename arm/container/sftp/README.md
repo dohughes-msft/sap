@@ -44,7 +44,7 @@ See file `sftp_private.parameter.json` for an example.
 
 ## Password hashes
 
-Passwords in the parameter file should be supplied as SHA-512 base64 hash values. You can generate such values using `openssl` or `mkpasswd` utilities as follows:
+Passwords in the parameter file should be supplied as SHA-512 base64 hash values. You can generate such values using `mkpasswd` or `openssl` utilities as follows:
 
 ~~~~
 # mkpasswd -m sha-512
@@ -64,7 +64,7 @@ $6$isJXoOazUKjnH$N8H3Q2G95hv.k3fGufPg4GwCeHNTtL9rDUlcAZY3ipMGezHCwu/3VCuAEG5xuVj
 
 **Important:** Append suffix ":e" to the value when you add it to the parameter file.
 
-If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [mkpasswd.json](./mkpasswd.json) to do this. Connect to the container through Azure Portal.
+If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [mkpasswd.json](mkpasswd.json) to do this. Connect to the container through Azure Portal.
 
 ## Working example
 
@@ -74,7 +74,7 @@ Follow the steps below to create a sample public SFTP container with five users.
 
 Set up an Azure storage account in the desired region. Create five Azure File shares. For simplicity you can give them the same names as the SFTP users, but in this example they are different. `sftpuser1` maps to file share `sftpshare1` and so on.
 
-![Alt](storageaccount_before.png "Storage account - before")
+![Alt](images/storageaccount_before.png "Storage account - before")
 
 ### 2. Prepare password hashes
 
@@ -201,6 +201,8 @@ tmpfs                                           954M     0  954M   0% /sys/firmw
 root@wk-caas-b5920ec3f4e64b32a70385c0bfcc17eb-2a19c01254dad6aa17949c:/#
 ~~~~
 
+Mount point `/upload` can be changed to anything you like by adjusting the template. It's not possible to mount a share directly as a user's home directory.
+
 ### 6. Perform a test SFTP connect and upload a file
 
 ~~~~
@@ -218,4 +220,4 @@ sftp> quit
 
 ### 7. Check that the file has landed in the storage account
 
-![Alt](storageaccount_after.png "Storage account - after")
+![Alt](images/storageaccount_after.png "Storage account - after")

@@ -59,7 +59,7 @@ or
 ~~~~
 # openssl passwd -6 -stdin
 Password:
-$6$isJXoOazUKjnH$N8H3Q2G95hv.k3fGufPg4GwCeHNTtL9rDUlcAZY3ipMGezHCwu/3VCuAEG5xuVjrEpqhSsUHBGkyZBis7Cktw1
+$6$l0JAkJW2$MDTj2Ad0xU8EzLeHamycYVRvroaEcYnd56kr2wULbeqic2lQXeQsBXLtKtKBDOHuFufcEZ/NVzENPV16GVNSf1
 ~~~~
 
 **Important:** Append suffix ":e" to the value when you add it to the parameter file.

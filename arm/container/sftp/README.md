@@ -28,7 +28,7 @@ To deploy the SFTP container you need to specify:
 4. Storage account name
 5. List of users, password hashes and file shares
 
-See file `sftp_public.parameter.json` for an example.
+See file [`sftp_public.parameter.json`](sftp_public.parameter.json) for an example.
 
 ### Private container in VNET
 
@@ -40,7 +40,7 @@ See file `sftp_public.parameter.json` for an example.
 6. Storage account name
 7. List of users, password hashes and file shares
 
-See file `sftp_private.parameter.json` for an example.
+See file [`sftp_private.parameter.json`](sftp_private.parameter.json) for an example.
 
 ## Password hashes
 
@@ -64,7 +64,7 @@ $6$l0JAkJW2$MDTj2Ad0xU8EzLeHamycYVRvroaEcYnd56kr2wULbeqic2lQXeQsBXLtKtKBDOHuFufc
 
 **Important:** Append suffix ":e" to the value when you add it to the parameter file.
 
-If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [mkpasswd.json](mkpasswd.json) to do this. Connect to the container through Azure Portal.
+If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [`mkpasswd.json`](mkpasswd.json) to do this. Connect to the container through Azure Portal.
 
 ## Working example
 

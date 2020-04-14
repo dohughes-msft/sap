@@ -66,6 +66,8 @@ $6$l0JAkJW2$MDTj2Ad0xU8EzLeHamycYVRvroaEcYnd56kr2wULbeqic2lQXeQsBXLtKtKBDOHuFufc
 
 If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [`mkpasswd.json`](mkpasswd.json) to do this. Connect to the container through Azure Portal.
 
+As a last option, an online password generator like https://www.mkpasswd.net/ could be used, although many customers may balk at trusting their passwords to an unknown third party.
+
 ## Working example
 
 Follow the steps below to create a sample public SFTP container with five users. The steps for a private container are similar - you just need to add the VNET details to the parameters.

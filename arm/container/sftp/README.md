@@ -28,7 +28,7 @@ To deploy the SFTP container you need to specify:
 4. Storage account name
 5. List of users, password hashes and file shares
 
-See file [`sftp_public.parameter.json`](sftp_public.parameter.json) for an example.
+See file [`sftp_public.parameters.json`](sftp_public.parameters.json) for an example.
 
 ### Private container in VNET
 
@@ -40,7 +40,7 @@ See file [`sftp_public.parameter.json`](sftp_public.parameter.json) for an examp
 6. Storage account name
 7. List of users, password hashes and file shares
 
-See file [`sftp_private.parameter.json`](sftp_private.parameter.json) for an example.
+See file [`sftp_private.parameters.json`](sftp_private.parameters.json) for an example.
 
 ## Password hashes
 

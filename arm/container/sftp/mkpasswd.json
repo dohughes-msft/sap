@@ -4,12 +4,14 @@
     "parameters": {
         "containerGroupName": {
             "type": "string",
+            "defaultValue": "mkpasswd-group",
             "metadata": {
                 "description": "The name of the container group"
             }
         },
         "containerGroupDnsLabel": {
             "type": "string",
+            "defaultValue": "contoso-mkpasswd",
             "metadata": {
                 "description": "The DNS label for the container group"
             }

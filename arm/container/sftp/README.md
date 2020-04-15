@@ -13,8 +13,8 @@ and add features such as:
 
 To get started you will need:
 
-1. A storage account containing one Azure file share for each SFTP user you want to set up
-2. `[Private container only]` A VNET with a subnet delegated to container groups (Microsoft.ContainerInstance/containerGroups)
+1. A storage account containing one Azure file share for each SFTP user you want to set up. Use template [`sftp_storage.json`](sftp_storage.json) to create one if needed.
+2. `[Private container only]` A VNET with a subnet delegated to container groups (Microsoft.ContainerInstance/containerGroups). Use template [`sftp_vnet.json`](sftp_vnet.json) to create one if needed.
 
 ## Parameter inputs
 
@@ -49,7 +49,7 @@ Passwords in the parameter file should be supplied as SHA-512 base64 hash values
 ~~~~
 # mkpasswd -m sha-512
 Password:
-$6$isJXoOazUKjnH$N8H3Q2G95hv.k3fGufPg4GwCeHNTtL9rDUlcAZY3ipMGezHCwu/3VCuAEG5xuVjrEpqhSsUHBGkyZBis7Cktw1
+$6$m6Ajg1GPn$NGitKb15c6L/4J8XgSWu8.b0ef/LdrbEVapePz/IQwTUSh2E38Ba88mTdbHN/hMCMrpFdzwBf8d7JVW4mw5aS/
 ~~~~
 
 (`mkpasswd` is a part of the `whois` package on Ubuntu)
@@ -82,6 +82,10 @@ Set up an Azure storage account in the desired region. Create five Azure File sh
 
 Use the `mkpasswd` tool to generate a password hash for each user. You should keep the cleartext passwords in a secure place.
 
+In this example `sftpuser1` has password `sftppass1` and so on.
+
+![Alt](images/mkpasswd.png "mkpasswd tool in container")
+
 ~~~~
 # mkpasswd -m sha-512
 Password:
@@ -111,10 +115,10 @@ $6$fqzWKSUa5M$Nn0vVwSJCgvmwKQyytnk5lVJZHgi20niDh4/s4BqGsWcD0L/tAEVTXhjDOrDqSC3rK
             "value": "sftp-public-group"
         },
         "containerGroupDnsLabel": {
-            "value": "contoso-sftp"
+            "value": "contososftp"
         },
         "storageAccountResourceGroup": {
-            "value": "sftp-rg1"
+            "value": "contoso-sftp-rg"
         },
         "storageAccountName": {
             "value": "contososftp"
@@ -124,27 +128,27 @@ $6$fqzWKSUa5M$Nn0vVwSJCgvmwKQyytnk5lVJZHgi20niDh4/s4BqGsWcD0L/tAEVTXhjDOrDqSC3rK
                 "credentials": [
                     {
                         "userName": "sftpuser1",
-                        "passwordHash": "$6$K5KDRPrPREWdNMd$lWVDgLDayM6YUS6/W92tkXDF/BUC355QgjVA4vktOb1.zPDP5HbILMr41E1uHiTkr0s4YTw56/thE6N7Xw93i1:e",
+                        "passwordHash": "$6$oqf4Kh9cScTv5q9D$fdW4h6nxhhP8bD2qPGXDkKDiZ6Ae6E8LbbMsXkT6AyDHNt8zQ2NYldohZwWSmPTpqNLm8lVnEp9gLpuAzh9ou1:e",
                         "fileShare": "sftpshare1"
                     },
                     {
                         "userName": "sftpuser2",
-                        "passwordHash": "$6$dq7YuXivSER$geeIXalZDnJ2sDi2/0rrrTOPPhkVu5Hb02YhO5KhLJaCktj4Jfg55cgFGcJkCwgbG4RjyznXbXs61OyD4GafP.:e",
+                        "passwordHash": "$6$A8XlA31dTYrtasJ/$WwsQ1budn/odN4IQsos1FOPZxXLUcP8JmGMVJS9Igclkb3xZRiznMgsibdhAHmi5RB61hQe36yu9tKQ9HSZoI.:e",
                         "fileShare": "sftpshare2"
                     },
                     {
                         "userName": "sftpuser3",
-                        "passwordHash": "$6$W7XFrIrEKte$XrOcZKsjhnnrvfnvVPs9egv5Cyi9XZVzvrkEpHsM30p5urMyS.aB875o3JRvC1U5WP/hRHCUIKC7gA0fBGCaF1:e",
+                        "passwordHash": "$6$pwYAmPM9.eFOzFVb$xcLPBAMKS6Udb7I3s74SlffZLKL.AbuyQYCewP87tF6ucmrxGpsrDlkC8HSt9HSprjhcdZbfjuqPQeuNJ5dhu1:e",
                         "fileShare": "sftpshare3"
                     },
                     {
                         "userName": "sftpuser4",
-                        "passwordHash": "$6$XQJ0ZE1ULTOi/Xs$EHNW5j0.UAHnE2Iy1GN/5Vf3Tg3nufmqWeGVJ8H/qtT5O7Fzg2/uDTnSLg/CRQlNRsd.Dpo5KNtwc8OcZ4Zx7.:e",
+                        "passwordHash": "$6$TnSMkS313z7Yr5ZC$ttCfJKQzyyUrTYSjAKIyjICMAmiQ0BGC98GlLc2LZ2S8QZojVrh1jy09p3v/1o2orwHwVHEE5Zep1sahveeFQ1:e",
                         "fileShare": "sftpshare4"
                     },
                     {
                         "userName": "sftpuser5",
-                        "passwordHash": "$6$fqzWKSUa5M$Nn0vVwSJCgvmwKQyytnk5lVJZHgi20niDh4/s4BqGsWcD0L/tAEVTXhjDOrDqSC3rKSBVFxrsCVrqCiqZCTdz0:e",
+                        "passwordHash": "$6$oaXD.NgYtry9bzxK$Ukiror8/OWq5vMzrFfT/5gaKjbBRPcB8eZPqg04brik6sJXBisk3PTpZLwXectwK69VaV8JsxNxecMUu6dAGk/:e",
                         "fileShare": "sftpshare5"
                     }
                 ]
@@ -157,11 +161,11 @@ $6$fqzWKSUa5M$Nn0vVwSJCgvmwKQyytnk5lVJZHgi20niDh4/s4BqGsWcD0L/tAEVTXhjDOrDqSC3rK
 ### 4. Deploy the template (PowerShell example)
 
 ~~~~
-PS > $resourceGroup="sftp-rg1"
+PS > $resourceGroup="contoso-sftp-rg"
 PS > New-AzResourceGroupDeployment -Name contoso-sftp-public -ResourceGroupName $resourceGroup -TemplateFile sftp_public.json -TemplateParameterFile sftp_public_contoso.parameters.json
 
 DeploymentName          : contoso-sftp-public
-ResourceGroupName       : sftp-rg1
+ResourceGroupName       : contoso-sftp-rg
 ProvisioningState       : Succeeded
 Timestamp               : 2020-04-08 13:31:57
 Mode                    : Incremental
@@ -171,7 +175,7 @@ Parameters              :
                           =============================  =========================  ==========
                           containerGroupName             String                     sftp-public-group
                           containerGroupDnsLabel         String                     contoso-sftp
-                          storageAccountResourceGroup    String                     sftp-rg1
+                          storageAccountResourceGroup    String                     contoso-sftp-rg
                           storageAccountName             String                     contososftp
                           users                          SecureObject
 
@@ -203,7 +207,7 @@ tmpfs                                           954M     0  954M   0% /sys/firmw
 root@wk-caas-b5920ec3f4e64b32a70385c0bfcc17eb-2a19c01254dad6aa17949c:/#
 ~~~~
 
-Mount point `/upload` can be changed to anything you like by adjusting the template. It's not possible to mount a share directly as a user's home directory.
+Mount point `/upload` can be changed to anything you like by adjusting the template. Note that it's not possible to mount a share directly as a user's home directory.
 
 ### 6. Perform a test SFTP connect and upload a file
 

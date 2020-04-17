@@ -59,7 +59,7 @@
             {
                 "name": "credArray",
                 "count": "[length(parameters('users').credentials)]",
-                "input": "[concat(parameters('users').credentials[copyIndex('credArray')].userName, ':', parameters('users').credentials[copyIndex('credArray')].passwordHash)]"
+                "input": "[concat(parameters('users').credentials[copyIndex('credArray')].userName, ':', parameters('users').credentials[copyIndex('credArray')].passwordHash, ':e')]"
             }
         ],
         "credString": "[replace(replace(replace(replace(string(variables('credArray')), '\"', ''), ',', ' '), '[', ''), ']', '')]"

@@ -62,8 +62,6 @@ Password:
 $6$l0JAkJW2$MDTj2Ad0xU8EzLeHamycYVRvroaEcYnd56kr2wULbeqic2lQXeQsBXLtKtKBDOHuFufcEZ/NVzENPV16GVNSf1
 ~~~~
 
-**Important:** Append suffix ":e" to the value when you add it to the parameter file.
-
 If you don't have an Ubuntu system to run these commands on, you can deploy a simple Ubuntu container with the mkpasswd utility installed. Use template [`mkpasswd.json`](mkpasswd.json) to do this. Connect to the container through Azure Portal.
 
 As a last option, an online password generator like https://www.mkpasswd.net/ could be used, although many customers may balk at trusting their passwords to an unknown third party.
@@ -128,27 +126,27 @@ $6$fqzWKSUa5M$Nn0vVwSJCgvmwKQyytnk5lVJZHgi20niDh4/s4BqGsWcD0L/tAEVTXhjDOrDqSC3rK
                 "credentials": [
                     {
                         "userName": "sftpuser1",
-                        "passwordHash": "$6$oqf4Kh9cScTv5q9D$fdW4h6nxhhP8bD2qPGXDkKDiZ6Ae6E8LbbMsXkT6AyDHNt8zQ2NYldohZwWSmPTpqNLm8lVnEp9gLpuAzh9ou1:e",
+                        "passwordHash": "$6$oqf4Kh9cScTv5q9D$fdW4h6nxhhP8bD2qPGXDkKDiZ6Ae6E8LbbMsXkT6AyDHNt8zQ2NYldohZwWSmPTpqNLm8lVnEp9gLpuAzh9ou1",
                         "fileShare": "sftpshare1"
                     },
                     {
                         "userName": "sftpuser2",
-                        "passwordHash": "$6$A8XlA31dTYrtasJ/$WwsQ1budn/odN4IQsos1FOPZxXLUcP8JmGMVJS9Igclkb3xZRiznMgsibdhAHmi5RB61hQe36yu9tKQ9HSZoI.:e",
+                        "passwordHash": "$6$A8XlA31dTYrtasJ/$WwsQ1budn/odN4IQsos1FOPZxXLUcP8JmGMVJS9Igclkb3xZRiznMgsibdhAHmi5RB61hQe36yu9tKQ9HSZoI.",
                         "fileShare": "sftpshare2"
                     },
                     {
                         "userName": "sftpuser3",
-                        "passwordHash": "$6$pwYAmPM9.eFOzFVb$xcLPBAMKS6Udb7I3s74SlffZLKL.AbuyQYCewP87tF6ucmrxGpsrDlkC8HSt9HSprjhcdZbfjuqPQeuNJ5dhu1:e",
+                        "passwordHash": "$6$pwYAmPM9.eFOzFVb$xcLPBAMKS6Udb7I3s74SlffZLKL.AbuyQYCewP87tF6ucmrxGpsrDlkC8HSt9HSprjhcdZbfjuqPQeuNJ5dhu1",
                         "fileShare": "sftpshare3"
                     },
                     {
                         "userName": "sftpuser4",
-                        "passwordHash": "$6$TnSMkS313z7Yr5ZC$ttCfJKQzyyUrTYSjAKIyjICMAmiQ0BGC98GlLc2LZ2S8QZojVrh1jy09p3v/1o2orwHwVHEE5Zep1sahveeFQ1:e",
+                        "passwordHash": "$6$TnSMkS313z7Yr5ZC$ttCfJKQzyyUrTYSjAKIyjICMAmiQ0BGC98GlLc2LZ2S8QZojVrh1jy09p3v/1o2orwHwVHEE5Zep1sahveeFQ1",
                         "fileShare": "sftpshare4"
                     },
                     {
                         "userName": "sftpuser5",
-                        "passwordHash": "$6$oaXD.NgYtry9bzxK$Ukiror8/OWq5vMzrFfT/5gaKjbBRPcB8eZPqg04brik6sJXBisk3PTpZLwXectwK69VaV8JsxNxecMUu6dAGk/:e",
+                        "passwordHash": "$6$oaXD.NgYtry9bzxK$Ukiror8/OWq5vMzrFfT/5gaKjbBRPcB8eZPqg04brik6sJXBisk3PTpZLwXectwK69VaV8JsxNxecMUu6dAGk/",
                         "fileShare": "sftpshare5"
                     }
                 ]

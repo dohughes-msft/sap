@@ -26,7 +26,7 @@ if ($allSubs) {
             $size = $vm.HardwareProfile.VmSize
             $maxCPU = ((Get-AzMetric -ResourceId $vm.Id -AggregationType Maximum -MetricName "Percentage CPU" -StartTime $startDate -EndTime $endDate -TimeGrain $timeSpan -DetailedOutput).Data.Maximum | Measure-Object -Maximum).Maximum
             $avgCPU = ((Get-AzMetric -ResourceId $vm.Id -AggregationType Average -MetricName "Percentage CPU" -StartTime $startDate -EndTime $endDate -TimeGrain $timeSpan -DetailedOutput).Data.Average | Measure-Object -Average).Average
-            $output = [PSCustomObject]@{"Subscription"=$sub.Name;"Virtual Machine"=$vm.Name;"Maximum CPU"=$maxCPU;"Average CPU"=[math]::Round($avgCPU,2)}
+            $output = [PSCustomObject]@{"Subscription"=$sub.Name;"Virtual Machine"=$vm.Name;"Size"=$size;"Maximum CPU"=$maxCPU;"Average CPU"=[math]::Round($avgCPU,2)}
             $output
         }
     }

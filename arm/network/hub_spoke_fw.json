@@ -21,6 +21,25 @@
     },
     "resources": [
         {
+            "type": "Microsoft.Network/routeTables",
+            "apiVersion": "2020-03-01",
+            "name": "[variables('routeTableName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "disableBgpRoutePropagation": true,
+                "routes": [
+                    {
+                        "name": "[variables('routeName')]",
+                        "properties": {
+                            "addressPrefix": "0.0.0.0/0",
+                            "nextHopType": "VirtualAppliance",
+                            "nextHopIpAddress": "10.1.1.4"
+                        }
+                    }
+                ]
+            }
+        },
+        {
             "name": "[variables('hubVnetName')]",
             "type": "Microsoft.Network/VirtualNetworks",
             "apiVersion": "2019-09-01",
@@ -55,7 +74,9 @@
             "type": "Microsoft.Network/VirtualNetworks",
             "apiVersion": "2019-09-01",
             "location": "[variables('location')]",
-            "dependsOn": [],
+            "dependsOn": [
+                "[variables('routeTableName')]"
+            ],
             "tags": {},
             "properties": {
                 "addressSpace": {
@@ -67,7 +88,10 @@
                     {
                         "name": "default",
                         "properties": {
-                            "addressPrefix": "10.2.1.0/24"
+                            "addressPrefix": "10.2.1.0/24",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', variables('routeTableName'))]"
+                            }
                         }
                     }
                 ],
@@ -79,7 +103,9 @@
             "type": "Microsoft.Network/VirtualNetworks",
             "apiVersion": "2019-09-01",
             "location": "[variables('location')]",
-            "dependsOn": [],
+            "dependsOn": [
+                "[variables('routeTableName')]"
+            ],
             "tags": {},
             "properties": {
                 "addressSpace": {
@@ -91,7 +117,10 @@
                     {
                         "name": "default",
                         "properties": {
-                            "addressPrefix": "10.3.1.0/24"
+                            "addressPrefix": "10.3.1.0/24",
+                            "routeTable": {
+                                "id": "[resourceId('Microsoft.Network/routeTables', variables('routeTableName'))]"
+                            }
                         }
                     }
                 ],
@@ -172,25 +201,6 @@
                 "remoteVirtualNetwork": {
                     "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('hubVnetName'))]"
                 }
-            }
-        },
-        {
-            "type": "Microsoft.Network/routeTables",
-            "apiVersion": "2020-03-01",
-            "name": "[variables('routeTableName')]",
-            "location": "[variables('location')]",
-            "properties": {
-                "disableBgpRoutePropagation": true,
-                "routes": [
-                    {
-                        "name": "[variables('routeName')]",
-                        "properties": {
-                            "addressPrefix": "0.0.0.0/0",
-                            "nextHopType": "VirtualAppliance",
-                            "nextHopIpAddress": "10.1.1.4"
-                        }
-                    }
-                ]
             }
         },
         {
@@ -352,7 +362,7 @@
             "name": "[variables('hubVmName')]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('hubVmNicName'))]"
+                "[variables('hubVmNicName')]"
             ],
             "tags": {
                 "$perfOptimizationLevel": "1"
@@ -402,7 +412,7 @@
             "name": "[variables('spoke1VmName')]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('spoke1NicName'))]"
+                "[variables('spoke1NicName')]"
             ],
             "tags": {
                 "$perfOptimizationLevel": "1"
@@ -455,7 +465,7 @@
             "name": "[variables('spoke2VmName')]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces', variables('spoke2NicName'))]"
+                "[variables('spoke2NicName')]"
             ],
             "tags": {
                 "$perfOptimizationLevel": "1"

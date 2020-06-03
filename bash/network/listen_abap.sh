@@ -1,8 +1,19 @@
 #!/bin/bash
 
 # Script to emulate an ABAP system by listening on ABAP ports
+# Supply system number as argument otherwise 00 will be used
 
-ABAPSYSNO=00
+if [[ "$*" == "" ]]; then
+    ABAPSYSNO=00
+else
+    case $1 in
+    [0-9][0-9])
+        ABAPSYSNO=$1 ;;
+    *)
+        echo "Provide a 2-digit number as argument." && exit 2 ;;
+    esac
+fi
+
 PORT1=32${ABAPSYSNO}
 PORT2=33${ABAPSYSNO}
 PORT3=36${ABAPSYSNO}

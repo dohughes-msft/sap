@@ -4,10 +4,12 @@
     "parameters": {},
     "variables": {
         "location": "[resourceGroup().location]",
-        "dbVmName": "[concat('dbvm-', uniqueString(resourceGroup().id))]",
+        "dbVmName": "dbvm",
+        "dbVmDnsName": "[concat(variables('dbVmName'), '-', substring(uniqueString(resourceGroup().id), 1, 7))]",
         "dbVmNicName": "[concat(variables('dbVmName'), '-nic')]",
         "dbVmPipName": "[concat(variables('dbVmName'), '-pip')]",
-        "appVmName": "[concat('appvm-', uniqueString(resourceGroup().id))]",
+        "appVmName": "appvm",
+        "appVmDnsName": "[concat(variables('appVmName'), '-', substring(uniqueString(resourceGroup().id), 1, 7))]",
         "appVmNicName": "[concat(variables('appVmName'), '-nic')]",
         "appVmPipName": "[concat(variables('appVmName'), '-pip')]",
         "vnetName": "sap-vnet",
@@ -171,8 +173,8 @@
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4,
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('appVmName')]",
-                    "fqdn": "[concat(variables('appVmName'), '.', variables('location'), '.cloudapp.azure.com')]"
+                    "domainNameLabel": "[variables('appVmDnsName')]",
+                    "fqdn": "[concat(variables('appVmDnsName'), '.', variables('location'), '.cloudapp.azure.com')]"
                 },
                 "ipTags": []
             }
@@ -190,8 +192,8 @@
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4,
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('dbVmName')]",
-                    "fqdn": "[concat(variables('dbVmName'), '.', variables('location'), '.cloudapp.azure.com')]"
+                    "domainNameLabel": "[variables('dbVmDnsName')]",
+                    "fqdn": "[concat(variables('dbVmDnsName'), '.', variables('location'), '.cloudapp.azure.com')]"
                 },
                 "ipTags": []
             }

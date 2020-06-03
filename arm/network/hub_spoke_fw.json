@@ -4,7 +4,8 @@
     "parameters": {},
     "variables": {
         "location": "[resourceGroup().location]",
-        "hubVmName": "[concat('jumpbox-', substring(uniqueString(resourceGroup().id), 1, 7))]",
+        "hubVmName": "jumpbox",
+        "hubVmDnsName": "[concat(variables('hubVmName'), '-', substring(uniqueString(resourceGroup().id), 1, 7))]",
         "spoke1VmName": "spoke1vm",
         "spoke2VmName": "spoke2vm",
         "hubVnetName": "hub-vnet",
@@ -257,8 +258,8 @@
                 "publicIPAllocationMethod": "Dynamic",
                 "idleTimeoutInMinutes": 4,
                 "dnsSettings": {
-                    "domainNameLabel": "[variables('hubVmName')]",
-                    "fqdn": "[concat(variables('hubVmName'), '.', variables('location'), '.cloudapp.azure.com')]"
+                    "domainNameLabel": "[variables('hubVmDnsName')]",
+                    "fqdn": "[concat(variables('hubVmDnsName'), '.', variables('location'), '.cloudapp.azure.com')]"
                 },
                 "ipTags": []
             }

@@ -22,9 +22,9 @@ PORT5=80${ABAPSYSNO}
 PORT6=81${ABAPSYSNO}
 
 # Emulate a HANA system
-nc -l -k $PORT1 &
-nc -l -k $PORT2 &
-nc -l -k $PORT3 &
-nc -l -k $PORT4 &
-nc -l -k $PORT5 &
-nc -l -k $PORT6 &
+nc -l -k $PORT1 > /dev/null 2>&1 &
+nc -l -k $PORT2 > /dev/null 2>&1 &
+nc -l -k $PORT3 > /dev/null 2>&1 &
+nc -l -k $PORT4 > /dev/null 2>&1 &
+nc -l -k $PORT5 > /dev/null 2>&1 &
+nc -l -k $PORT6 > /dev/null 2>&1 &

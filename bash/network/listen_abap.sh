@@ -21,7 +21,7 @@ PORT4=39${ABAPSYSNO}
 PORT5=80${ABAPSYSNO}
 PORT6=81${ABAPSYSNO}
 
-# Emulate a HANA system
+# Emulate an ABAP system
 nc -l -k $PORT1 > /dev/null 2>&1 &
 nc -l -k $PORT2 > /dev/null 2>&1 &
 nc -l -k $PORT3 > /dev/null 2>&1 &

@@ -3,7 +3,7 @@
 # Script to emulate an ABAP client by connecting to ABAP ports
 # Supply system number as argument otherwise 00 will be used
 
-# DB host
+# Application host
 APPHOST=appvm
 # Connection interval
 INTERVALSEC=5

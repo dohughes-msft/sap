@@ -18,7 +18,9 @@
         "hubVmPipName": "[concat(variables('hubVmName'), '-pip')]",
         "hubVmNicName": "[concat(variables('hubVmName'), '-nic')]",
         "spoke1NicName": "[concat(variables('spoke1VmName'), '-nic')]",
-        "spoke2NicName": "[concat(variables('spoke2VmName'), '-nic')]"
+        "spoke2NicName": "[concat(variables('spoke2VmName'), '-nic')]",
+        "adminUser": "adminuser",
+        "adminPassword": "P4ssword!!!!"
     },
     "resources": [
         {
@@ -391,8 +393,8 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('hubVmName')]",
-                    "adminUsername": "dohughes",
-                    "adminPassword": "P4ssword!!!!",
+                    "adminUsername": "[variables('adminUser')]",
+                    "adminPassword": "[variables('adminPassword')]",
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": true,
                         "provisionVmAgent": true
@@ -443,8 +445,8 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('spoke1VmName')]",
-                    "adminUsername": "dohughes",
-                    "adminPassword": "P4ssword!!!!",
+                    "adminUsername": "[variables('adminUser')]",
+                    "adminPassword": "[variables('adminPassword')]",
                     "linuxConfiguration": {
                         "provisionVMAgent": true
                     },
@@ -496,8 +498,8 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('spoke2VmName')]",
-                    "adminUsername": "dohughes",
-                    "adminPassword": "P4ssword!!!!",
+                    "adminUsername": "[variables('adminUser')]",
+                    "adminPassword": "[variables('adminPassword')]",
                     "linuxConfiguration": {
                         "provisionVMAgent": true
                     },

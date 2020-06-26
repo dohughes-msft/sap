@@ -144,6 +144,27 @@
             "metadata": {
                 "description": "Name of the storage account for boot diagnostics."
             }
+        },
+        "adminUser": {
+            "type": "String",
+            "defaultValue": "adminuser",
+            "metadata": {
+                "description": "The name of the VM administrator account."
+            }
+        },
+        "sshKeyRg": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Resource group containing the SSH public key object."
+            }
+        },
+        "sshKeyName": {
+            "type": "String",
+            "defaultValue": "",
+            "metadata": {
+                "description": "Name of the SSH public key object."
+            }
         }
     },
     "variables": {
@@ -160,7 +181,15 @@
             "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
         "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
-        "diagStorageAccount": "[concat('https://', parameters('diagStorageAccountName'), '.blob.core.windows.net/')]"
+        "diagStorageAccount": "[concat('https://', parameters('diagStorageAccountName'), '.blob.core.windows.net/')]",
+        "osImage": {
+            "publisher": "SUSE",
+            "offer": "SLES-SAP",
+            "sku": "12-SP4-gen2",
+            "version": "latest"
+        },
+        "sshKeyRg": "[if(empty(parameters('sshKeyRg')), resourceGroup().name, parameters('sshKeyRg'))]",
+        "sshKeyResourceId": "[resourceId(variables('sshKeyRg'), 'Microsoft.Compute/sshPublicKeys', parameters('sshKeyName'))]"
     },
     "resources": [
         {
@@ -285,12 +314,7 @@
                         },
                         "diskSizeGb": 128
                     },
-                    "imageReference": {
-                        "publisher": "SUSE",
-                        "offer": "SLES-SAP",
-                        "sku": "12-sp4",
-                        "version": "latest"
-                    },
+                    "imageReference": "[variables('osImage')]",
                     "dataDisks": "[if(equals(parameters('dataDiskSize'), 0), json('null'), json(concat('[{\"lun\": 0, \"name\": \"', variables('label'), variables('useCase'), copyIndex(1), '-data-disk1', '\", \"createOption\": \"empty\", \"caching\": \"ReadWrite\", \"diskSizeGb\": \"', parameters('dataDiskSize'), '\", \"managedDisk\": {\"storageAccountType\": \"', variables('storageSku'), '\"}, \"writeAcceleratorEnabled\": false}]')))]"
                 },
                 "availabilitySet": {
@@ -298,14 +322,14 @@
                 },
                 "osProfile": {
                     "computerName": "[concat(variables('label'), variables('useCase'), copyIndex(1))]",
-                    "adminUsername": "dohughes",
+                    "adminUsername": "[parameters('adminUser')]",
                     "linuxConfiguration": {
                         "disablePasswordAuthentication": true,
                         "ssh": {
                             "publicKeys": [
                                 {
-                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVU6+IWrV6/BclQ4jM9uqE9nxRnzQ2/iTMhuI8LzC+jJZE2UQ8NCvqsEwBa0DWffyEYuEVBTdezIahE9CIv1Sllnr8yfkQ78pSlwm7Y6dStaqudwY+s0+LSPESKbeWZ/VYT+3gCqDVNXT1zysvUmYViNtFX/dVpiBi1o2erCE7IGNaPiAKsF4iOmjDEwgeS94cIKkN9t3jUs091lwxQT1//gIA+rFoW18F/tkKF0OUkfna8g7hEj2IvQG0gm3sB7EwBj3Q/0fPXAIC3mhgqnPaOyiIhqwfaWHEQWRx6RGQGZlyovbYzGuch4K/oPu6jyKnpmzfwEpnQt056WJ1rIsr",
-                                    "path": "/home/dohughes/.ssh/authorized_keys"
+                                    "keyData": "[reference(variables('sshKeyResourceId'), '2019-12-01').publicKey]",
+                                    "path": "[concat('/home/', parameters('adminUser'), '/.ssh/authorized_keys')]"
                                 }
                             ]
                         }

@@ -19,7 +19,9 @@
         "dbAsgName": "db-asg",
         "appNsgName": "app-nsg",
         "appAsgName": "app-asg",
-        "allNsgName": "all-nsg"
+        "allNsgName": "all-nsg",
+        "adminUser": "adminuser",
+        "adminPassword": "P4ssword!!!!"
     },
     "resources": [
         {
@@ -234,17 +236,9 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('appVmName')]",
-                    "adminUsername": "dohughes",
+                    "adminUsername": "[variables('adminUser')]",
+                    "adminPassword": "[variables('adminPassword')]",
                     "linuxConfiguration": {
-                        "disablePasswordAuthentication": true,
-                        "ssh": {
-                            "publicKeys": [
-                                {
-                                    "path": "/home/dohughes/.ssh/authorized_keys",
-                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVU6+IWrV6/BclQ4jM9uqE9nxRnzQ2/iTMhuI8LzC+jJZE2UQ8NCvqsEwBa0DWffyEYuEVBTdezIahE9CIv1Sllnr8yfkQ78pSlwm7Y6dStaqudwY+s0+LSPESKbeWZ/VYT+3gCqDVNXT1zysvUmYViNtFX/dVpiBi1o2erCE7IGNaPiAKsF4iOmjDEwgeS94cIKkN9t3jUs091lwxQT1//gIA+rFoW18F/tkKF0OUkfna8g7hEj2IvQG0gm3sB7EwBj3Q/0fPXAIC3mhgqnPaOyiIhqwfaWHEQWRx6RGQGZlyovbYzGuch4K/oPu6jyKnpmzfwEpnQt056WJ1rIsr dohughes@microsoft.com\n"
-                                }
-                            ]
-                        },
                         "provisionVMAgent": true
                     },
                     "secrets": [],
@@ -295,17 +289,9 @@
                 },
                 "osProfile": {
                     "computerName": "[variables('dbVmName')]",
-                    "adminUsername": "dohughes",
+                    "adminUsername": "[variables('adminUser')]",
+                    "adminPassword": "[variables('adminPassword')]",
                     "linuxConfiguration": {
-                        "disablePasswordAuthentication": true,
-                        "ssh": {
-                            "publicKeys": [
-                                {
-                                    "path": "/home/dohughes/.ssh/authorized_keys",
-                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDVU6+IWrV6/BclQ4jM9uqE9nxRnzQ2/iTMhuI8LzC+jJZE2UQ8NCvqsEwBa0DWffyEYuEVBTdezIahE9CIv1Sllnr8yfkQ78pSlwm7Y6dStaqudwY+s0+LSPESKbeWZ/VYT+3gCqDVNXT1zysvUmYViNtFX/dVpiBi1o2erCE7IGNaPiAKsF4iOmjDEwgeS94cIKkN9t3jUs091lwxQT1//gIA+rFoW18F/tkKF0OUkfna8g7hEj2IvQG0gm3sB7EwBj3Q/0fPXAIC3mhgqnPaOyiIhqwfaWHEQWRx6RGQGZlyovbYzGuch4K/oPu6jyKnpmzfwEpnQt056WJ1rIsr dohughes@microsoft.com\n"
-                                }
-                            ]
-                        },
                         "provisionVMAgent": true
                     },
                     "secrets": [],

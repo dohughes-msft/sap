@@ -12,6 +12,7 @@
         "capacityPoolSizeBytes": "[mul(mul(variables('capacityPoolSizeTb'), 1073741824), 1024)]",
         "capacityPoolSizeBytesComment": "An extra mul function is needed to get around the limitation of PowerShell where an integer cannot be greater than 2147483647.",
         "vmName": "anfvm",
+        "vmDnsName": "[concat(variables('vmName'), '-', substring(uniqueString(resourceGroup().id), 1, 7))]",
         "vmSize": "Standard_D4s_v3",
         "nicName": "[concat(variables('vmName'), '-nic')]",
         "pipName": "[concat(variables('vmName'), '-pip')]",
@@ -83,7 +84,14 @@
             "apiVersion": "2019-02-01",
             "location": "[variables('location')]",
             "properties": {
-                "publicIpAllocationMethod": "Dynamic"
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('vmDnsName')]",
+                    "fqdn": "[concat(variables('vmDnsName'), '.', variables('location'), '.cloudapp.azure.com')]"
+                },
+                "ipTags": []
             },
             "sku": {
                 "name": "Basic"
@@ -156,5 +164,11 @@
                 }
             }
         }
-    ]
+    ],
+    "outputs": {
+        "vmDnsName": {
+            "type": "string",
+            "value": "[reference(variables('pipName')).dnsSettings.fqdn]"
+        }
+    }
 }

@@ -20,6 +20,8 @@
         "appNsgName": "app-nsg",
         "appAsgName": "app-asg",
         "allNsgName": "all-nsg",
+        "workspaceName": "[concat('law-nsg-', substring(uniqueString(resourceGroup().id), 1, 7))]",
+        "storageAccountName": "[concat('sansg', substring(uniqueString(resourceGroup().id), 1, 7))]",
         "adminUser": "adminuser",
         "adminPassword": "P4ssword!!!!"
     },
@@ -147,7 +149,7 @@
                         "properties": {
                             "protocol": "TCP",
                             "sourcePortRange": "*",
-                            "destinationPortRange": "30015",
+                            "destinationPortRange": "30013,30015",
                             "sourceAddressPrefix": "*",
                             "destinationAddressPrefix": "*",
                             "access": "Allow",
@@ -806,6 +808,42 @@
                     }
                 ]
             }
+        },
+        {
+            "apiVersion": "2020-03-01-preview",
+            "name": "[variables('workspaceName')]",
+            "location": "[variables('location')]",
+            "tags": {},
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "properties": {
+                "sku": {
+                    "name": "pergb2018"
+                }
+            }
+        },
+        {
+            "name": "[variables('storageAccountName')]",
+            "type": "Microsoft.Storage/storageAccounts",
+            "apiVersion": "2019-06-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "accessTier": "Hot",
+                "minimumTlsVersion": "TLS1_0",
+                "supportsHttpsTrafficOnly": true,
+                "allowBlobPublicAccess": false,
+                "networkAcls": {
+                    "bypass": "AzureServices",
+                    "defaultAction": "Allow",
+                    "ipRules": []
+                },
+                "largeFileSharesState": "Disabled"
+            },
+            "dependsOn": [],
+            "sku": {
+                "name": "Standard_LRS"
+            },
+            "kind": "StorageV2",
+            "tags": {}
         }
     ]
 }

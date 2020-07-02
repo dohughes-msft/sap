@@ -1,6 +1,6 @@
 # LVM automation for SAP systems
 ## Introduction
-With the bash scripts in this folder you can automate the creation of volume groups, logical volumes, and filesystems for SAP systems. By providing a configuration file that describes the desired state you can finely control which filesystems are created and on which volumes and disks they are located. Filesystems are always striped across the maximum number of disks to achieve the best performance.
+With this script you can automate the creation of volume groups, logical volumes, and filesystems for SAP systems. By providing a configuration file that describes the desired state you can finely control which filesystems are created and on which volumes and disks they are located. Filesystems are always striped across the maximum number of disks to achieve the best performance.
 
 ## Example
 
@@ -20,7 +20,7 @@ Examples:
 lvm4sap.sh -s NH1 -t /sapmedia/scripts/disk/hana_prod_m32ts
 ~~~~
 ~~~~
-lvm4sap.sh -s ND1 -t https://raw.githubusercontent.com/dohughes-msft/sap/master/bash/lvm/diskconfig/db2_standard
+lvm4sap.sh -s ND1 -t https://raw.githubusercontent.com/dohughes-msft/sap/master/bash/disk/diskconfig-lvm/db2_standard
 ~~~~
 
 ## Configuration file
@@ -78,9 +78,9 @@ SIDbackupvg,SIDhanabackuplv,/hana/backup/SID,100
 
 The result in this case if we keep `SID = NH1` is:
 
-![Alt](m64s.png "M64s disk configuration")
+![Alt](m64s-lvm.png "M64s disk configuration")
 
 ## Pre-made configuration files
-In folder `diskconfig` you will find pre-made configuration files for HANA, AnyDB and application servers. The HANA configurations correspond to the Microsoft-recommended storage configurations found at:
+In folder `diskconfig-lvm` you will find pre-made configuration files for HANA, AnyDB and application servers. The HANA configurations correspond to the Microsoft-recommended storage configurations found at:
 
 https://docs.microsoft.com/en-us/azure/virtual-machines/workloads/sap/hana-vm-operations-storage

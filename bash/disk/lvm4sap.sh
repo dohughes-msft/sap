@@ -274,7 +274,7 @@ echo "$FILESYS" | while IFS=, read VG LV FS SIZE; do
   mkfs -t $FSTYPE /dev/$VG/$LV
   echo
   mkdir -p $FS
-  echo "/dev/$VG/$LV $FS  $FSTYPE  defaults  0 0" >> /etc/fstab
+  echo "/dev/$VG/$LV $FS  $FSTYPE  defaults,nofail  0 0" >> /etc/fstab
   log info "Mounting filesystem $FS..."
   mount $FS
 done

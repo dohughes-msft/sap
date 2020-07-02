@@ -3,7 +3,7 @@
 With the scripts here you can automate the creation of filesystems for SAP systems. By providing a configuration file that describes the desired state you can finely control which filesystems are created and on which volumes and disks they are located. Filesystems are always striped across the maximum number of disks to achieve the best performance.
 
 ## Alternatives
-There are main two ways of combining multiple disks into filesystems, LVM and mdadm. Both are robust technologies and while they are broadly equivalent, there are small differences that may make one or the other more suitable to a particular situation.
+There are main two ways of combining multiple disks into filesystems, LVM and RAID. Both are robust technologies and while they are broadly equivalent, there are small differences that may make one or the other more suitable to a particular situation.
 
 ### 1. Logical Volume Manager aka LVM
 LVM makes administration easy. Storage devices (disks) are assigned to volume groups, which are then divided up in to logical volumes, on which you create the filesystems. You can have any number of storage devices underneath, divided among any number of filesystems.

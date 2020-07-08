@@ -13,7 +13,8 @@
 # GID 2100-2199 : Cross-system Oracle groups like dba
 # GID 2200-2299 : Cross-system DB2 groups (currently there are none)
 # GID 2300-2399 : Cross-system MaxDB groups like sdb
-# GID 2400-2499 : Cross-system HANA groups (currenty there are none)
+# GID 2400-2499 : Cross-system HANA groups (currently there are none)
+# GID 2500-2599 : Cross-system ASE groups (currently there are none)
 # GID 3000-3999 : System-dependent groups (any database)
 #
 # UID 2000-2099 : Cross-system SAP users like sapadm
@@ -21,6 +22,7 @@
 # UID 2200-2299 : Cross-system DB2 users like sapsr3
 # UID 2300-2399 : Cross-system MaxDB users like sdb
 # UID 2400-2499 : Cross-system HANA users (currently none)
+# UID 2500-2599 : Cross-system ASE users (currently none)
 # UID 3000-3999 : System-dependent users (any database)
 #
 # In the scope of this script, the following users and groups will be created:

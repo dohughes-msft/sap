@@ -1,10 +1,10 @@
 #!/bin/bash
 #-------------------------------------------------------------------------
-# Filename: mkgu_sap.sh
+# Filename: mkgu_ase.sh
 # Author: Donovan Hughes
 # Info: Script to read SID and system number and create appropriate SAP application or HANA users and groups (not users for AnyDB)
 # Set DEBUG=Y before running the script for debug mode
-# Syntax:          mkgu_sap.sh -s <SID> -n <SYSNO>
+# Syntax:          mkgu_ase.sh -s <SID> -n <SYSNO>
 # Run as:          root
 #
 # The general naming and numbering convention for UID and GID is:
@@ -29,13 +29,11 @@
 #
 # Group          GID
 # -----          ---
-# sapinst        2001
 # sapsys         2002
 #
 # User           UID             Groups                 Description               Home directory
 # ----           ---             ------                 -----------               --------------
-# sapadm         2001            sapsys,sapinst         SAP Administrator         /home/sapadm
-# <sid>adm       3<SYSNO>1       sapsys,sapinst         SAP Administrator         /home/<sid>adm
+# syb<sid>       3<SYSNO>2       sapsys                 Sybase Administrator      /home/syb<sid>
 #
 # Change the defaults using the constants below in the environment section.
 
@@ -99,10 +97,8 @@ esac
 SCRIPTNAME=$(basename $0)
 SCRIPTFULLNAME="$SCRIPTNAME $*"
 MYRC=0
-GID_SAPINST=2001
 GID_SAPSYS=2002
-UID_SAPADM=2001
-# UID_SIDADM is set below once we know SYSNO
+# Others are set below once we know SYSNO
 
 #-------------------------------------------------------------------------
 # Process the arguments and check for errors
@@ -142,15 +138,10 @@ done
 
 start
 
-UID_SIDADM=3${SYSNO}1
+UID_SYBSID=3${SYSNO}2
 
 # Create groups
 
-if grep -q ^sapinst: /etc/group; then
-  log info "Group sapinst already exists. Nothing done."
-else
-  groupadd -g $GID_SAPINST sapinst && log info "Group sapinst added with GID $GID_SAPINST." || log warning "Unknown error adding group sapinst."
-fi
 if grep -q ^sapsys: /etc/group; then
   log info "Group sapsys already exists. Nothing done."
 else
@@ -159,17 +150,11 @@ fi
 
 # Create users
 
-if grep -q ^sapadm: /etc/passwd; then
-  log info "User sapadm already exists."
-  usermod -a -g sapsys -G sapinst sapadm && log info "Group membership set for user sapadm." || log warning "Unknown error setting group membership for user sapadm."
+if grep -q ^syb${LSID}: /etc/passwd; then
+  log info "User syb${LSID} already exists."
+  usermod -a -g dba -G dba,oper,sapinst syb${LSID} && log info "Group membership set for user syb${LSID}." || log warning "Unknown error setting group membership for user syb${LSID}. Continuing."
 else
-  useradd -c "SAP Administrator" -d /home/sapadm -g sapsys -G sapinst -N -m -u $UID_SAPADM sapadm  && log info "User sapadm added with UID $UID_SAPADM." || log warning "Unknown error adding user sapadm."
-fi
-if grep -q ^${LSID}adm: /etc/passwd; then
-  log info "User ${LSID}adm already exists."
-  usermod -a -g sapsys -G sapinst ${LSID}adm && log info "Group membership set for user ${LSID}adm." || log warning "Unknown error setting group membership for user ${LSID}adm."
-else
-  useradd -c "SAP Administrator" -d /home/${LSID}adm -g sapsys -G sapinst -N -m -u $UID_SIDADM ${LSID}adm && log info "User ${LSID}adm added with UID $UID_SIDADM." || log warning "Unknown error adding user ${LSID}adm."
+  useradd -c "Sybase Administrator" -d /home/syb${LSID} -g dba -G oper,sapinst -N -m -u $UID_SYBSID syb${LSID} && log info "User syb${LSID} created with UID $UID_SYBSID." || log warning "Unknown error creating user syb${LSID}. Continuing."
 fi
 
 finish

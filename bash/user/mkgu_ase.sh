@@ -152,9 +152,9 @@ fi
 
 if grep -q ^syb${LSID}: /etc/passwd; then
   log info "User syb${LSID} already exists."
-  usermod -a -g dba -G dba,oper,sapinst syb${LSID} && log info "Group membership set for user syb${LSID}." || log warning "Unknown error setting group membership for user syb${LSID}. Continuing."
+  usermod -a -g sapsys syb${LSID} && log info "Group membership set for user syb${LSID}." || log warning "Unknown error setting group membership for user syb${LSID}. Continuing."
 else
-  useradd -c "Sybase Administrator" -d /home/syb${LSID} -g dba -G oper,sapinst -N -m -u $UID_SYBSID syb${LSID} && log info "User syb${LSID} created with UID $UID_SYBSID." || log warning "Unknown error creating user syb${LSID}. Continuing."
+  useradd -c "Sybase Administrator" -d /home/syb${LSID} -g sapsys -N -m -u $UID_SYBSID syb${LSID} && log info "User syb${LSID} created with UID $UID_SYBSID." || log warning "Unknown error creating user syb${LSID}. Continuing."
 fi
 
 finish

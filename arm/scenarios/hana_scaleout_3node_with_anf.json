@@ -1,0 +1,410 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "anfAccountName": "[concat('anf-', uniqueString(resourceGroup().id))]",
+        "anfPoolName": "sap-pool-1",
+        "vnetRg": "sap-shared-northeurope-rg1",
+        "vnetName": "sap-vnet-northeurope",
+        "anfSubnetName": "anf-subnet",
+        "dbSubnetName": "db-subnet",
+        "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+        "anfSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('anfSubnetName'))]",
+        "dbSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('dbSubnetName'))]",
+        "sapSid": "hn1",
+        "label": "[concat('sap-', variables('sapSid'))]",
+        "ppgName": "[concat(variables('label'), '-ppg')]",
+        "avsetName": "[concat(variables('label'), '-avset')]",
+        "vmSize": "Standard_E16s_v3",
+        "adminUser": "adminuser",
+        "adminPassword": "P4ssword!!!!"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.NetApp/netAppAccounts",
+            "apiVersion": "2020-02-01",
+            "name": "[variables('anfAccountName')]",
+            "location": "[variables('location')]",
+            "properties": {}
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools",
+            "apiVersion": "2020-02-01",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'))]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[variables('anfAccountName')]"
+            ],
+            "properties": {
+                "serviceLevel": "Premium",
+                "size": 4398046511104
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2020-02-01",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-data-node1')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Premium",
+                "creationToken": "[concat(variables('label'), '-hana-data-node1')]",
+                "usageThreshold": 549755813888,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[variables('anfSubnetId')]",
+                "snapshotDirectoryVisible": true
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2020-02-01",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-data-node2')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Premium",
+                "creationToken": "[concat(variables('label'), '-hana-data-node2')]",
+                "usageThreshold": 549755813888,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[variables('anfSubnetId')]",
+                "snapshotDirectoryVisible": true
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2020-02-01",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-log-node1')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Premium",
+                "creationToken": "[concat(variables('label'), '-hana-log-node1')]",
+                "usageThreshold": 549755813888,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[variables('anfSubnetId')]",
+                "snapshotDirectoryVisible": true
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2020-02-01",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-log-node2')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Premium",
+                "creationToken": "[concat(variables('label'), '-hana-log-node2')]",
+                "usageThreshold": 549755813888,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[variables('anfSubnetId')]",
+                "snapshotDirectoryVisible": true
+            }
+        },
+        {
+            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
+            "apiVersion": "2020-02-01",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-shared')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
+            ],
+            "properties": {
+                "serviceLevel": "Premium",
+                "creationToken": "[concat(variables('label'), '-hana-shared')]",
+                "usageThreshold": 549755813888,
+                "exportPolicy": {
+                    "rules": [
+                        {
+                            "ruleIndex": 1,
+                            "unixReadOnly": false,
+                            "unixReadWrite": true,
+                            "cifs": false,
+                            "nfsv3": false,
+                            "nfsv41": true,
+                            "allowedClients": "0.0.0.0/0"
+                        }
+                    ]
+                },
+                "protocolTypes": [
+                    "NFSv4.1"
+                ],
+                "subnetId": "[variables('anfSubnetId')]",
+                "snapshotDirectoryVisible": true
+            }
+        },
+        {
+            "type": "Microsoft.Compute/proximityPlacementGroups",
+            "apiVersion": "2019-07-01",
+            "name": "[variables('ppgName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "proximityPlacementGroupType": "Standard"
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2019-03-01",
+            "name": "[variables('avsetName')]",
+            "location": "[variables('location')]",
+            "tags": {},
+            "dependsOn": [
+                "[variables('ppgName')]"
+            ],
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformFaultDomainCount": 2,
+                "platformUpdateDomainCount": 5,
+                "proximityPlacementGroup": {
+                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/proximityPlacementGroups', variables('ppgName'))]"
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2019-09-01",
+            "name": "[concat(variables('label'), '-db', copyIndex('piploop', 1), '-pip1')]",
+            "location": "[variables('location')]",
+            "dependsOn": [],
+            "sku": {
+                "name": "Standard"
+            },
+            "copy": {
+                "count": 3,
+                "name": "piploop"
+            },
+            "properties": {
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Static",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "[concat(variables('label'), '-db', copyIndex('piploop', 1))]",
+                    "fqdn": "[concat(variables('label'), '-db', copyIndex('piploop', 1), '.', variables('location'), '.cloudapp.azure.com')]"
+                },
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-07-01",
+            "name": "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-nic1')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-pip1')]"
+            ],
+            "copy": {
+                "count": 3,
+                "name": "nicloop"
+            },
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex('nicloop', 1), '-pip1'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('dbSubnetId')]"
+                                },
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "enableAcceleratedNetworking": true
+            }
+        },
+        {
+            "name": "[concat(variables('label'), '-db', copyIndex('usrsapdisk', 1), '-datadisk1')]",
+            "type": "Microsoft.Compute/disks",
+            "apiVersion": "2019-07-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "diskSizeGB": 64,
+                "creationData": {
+                    "createOption": "empty"
+                }
+            },
+            "sku": {
+                "name": "Premium_LRS"
+            },
+            "copy": {
+                "name": "usrsapdisk",
+                "count": 3
+            }
+        },
+        {
+            "name": "[concat(variables('label'), '-db', copyIndex('hanabackupdisk', 1), '-datadisk2')]",
+            "type": "Microsoft.Compute/disks",
+            "apiVersion": "2019-07-01",
+            "location": "[variables('location')]",
+            "properties": {
+                "diskSizeGB": 256,
+                "creationData": {
+                    "createOption": "empty"
+                }
+            },
+            "sku": {
+                "name": "Premium_LRS"
+            },
+            "copy": {
+                "name": "hanabackupdisk",
+                "count": 3
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1))]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-nic1')]",
+                "[variables('avsetName')]"
+            ],
+            "tags": {},
+            "copy": {
+                "count": 3,
+                "name": "vmloop"
+            },
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-nic1'))]"
+                        }
+                    ]
+                },
+                "storageProfile": {
+                    "osDisk": {
+                        "createOption": "fromImage",
+                        "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-os-disk1')]",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS"
+                        },
+                        "diskSizeGb": 128
+                    },
+                    "imageReference": {
+                        "publisher": "SUSE",
+                        "offer": "SLES-SAP",
+                        "sku": "12-sp4-gen2",
+                        "version": "latest"
+                    },
+                    "dataDisks": [
+                        {
+                            "lun": 0,
+                            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk1')]",
+                            "createOption": "Attach",
+                            "caching": "ReadWrite",
+                            "writeAcceleratorEnabled": false,
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk1'))]"
+                            },
+                            "toBeDetached": false
+                        },
+                        {
+                            "lun": 1,
+                            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk2')]",
+                            "createOption": "Attach",
+                            "caching": "ReadOnly",
+                            "writeAcceleratorEnabled": false,
+                            "managedDisk": {
+                                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk2'))]"
+                            },
+                            "toBeDetached": false
+                        }
+                    ]
+                },
+                "availabilitySet": {
+                    "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/availabilitySets', variables('avsetName'))]"
+                },
+                "osProfile": {
+                    "computerName": "[concat(variables('label'), '-db', copyIndex('vmloop', 1))]",
+                    "adminUsername": "[variables('adminUser')]",
+                    "adminPassword": "[variables('adminPassword')]"
+                },
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": false
+                    }
+                }
+            }
+        }
+    ]
+}

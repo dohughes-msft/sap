@@ -41,7 +41,9 @@ $inputs = '{
     "subscription": "3e51b8f1-b856-4896-9a90-50ac02c27cf1",
     "description": "Dons Azure Playground",
     "locations": [
-        "westus2"
+        "westus2",
+        "westeurope",
+        "northeurope"
     ]
 }'
 

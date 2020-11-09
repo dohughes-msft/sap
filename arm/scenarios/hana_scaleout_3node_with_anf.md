@@ -1,6 +1,6 @@
 # Scenario - HANA scale-out system with 3 nodes (2 workers & 1 standby)
 ## Introduction
-This simple ARM template will deploy 3 VMs along with Azure NetApp Files storage for a scale-out HANA system.
+[This simple ARM template](hana_scaleout_3node_with_anf.json) will deploy 3 VMs along with Azure NetApp Files storage for a scale-out HANA system.
 
 This is good for a technical proof of concept but will not have the performance charactaristics of a true HANA system due to the more cost-efficient VMs and storage used.
 

@@ -18,6 +18,12 @@
         "ppgName": "[concat(variables('label'), '-ppg')]",
         "avsetName": "[concat(variables('label'), '-avset')]",
         "vmSize": "Standard_E16s_v3",
+        "osImage": {
+            "publisher": "SUSE",
+            "offer": "SLES-SAP",
+            "sku": "12-sp4-gen2",
+            "version": "latest"
+        },
         "adminUser": "adminuser",
         "adminPassword": "P4ssword!!!!"
     },
@@ -232,37 +238,11 @@
             }
         },
         {
-            "type": "Microsoft.Network/publicIPAddresses",
-            "apiVersion": "2019-09-01",
-            "name": "[concat(variables('label'), '-db', copyIndex('piploop', 1), '-pip1')]",
-            "location": "[variables('location')]",
-            "dependsOn": [],
-            "sku": {
-                "name": "Standard"
-            },
-            "copy": {
-                "count": 3,
-                "name": "piploop"
-            },
-            "properties": {
-                "publicIPAddressVersion": "IPv4",
-                "publicIPAllocationMethod": "Static",
-                "idleTimeoutInMinutes": 4,
-                "dnsSettings": {
-                    "domainNameLabel": "[concat(variables('label'), '-db', copyIndex('piploop', 1))]",
-                    "fqdn": "[concat(variables('label'), '-db', copyIndex('piploop', 1), '.', variables('location'), '.cloudapp.azure.com')]"
-                },
-                "ipTags": []
-            }
-        },
-        {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
             "name": "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-nic1')]",
             "location": "[variables('location')]",
-            "dependsOn": [
-                "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-pip1')]"
-            ],
+            "dependsOn": [],
             "copy": {
                 "count": 3,
                 "name": "nicloop"
@@ -274,9 +254,6 @@
                         "type": "Microsoft.Network/networkInterfaces/ipConfigurations",
                         "properties": {
                             "privateIPAllocationMethod": "Dynamic",
-                            "publicIPAddress": {
-                                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIPAddresses', concat(variables('label'), '-db', copyIndex('nicloop', 1), '-pip1'))]"
-                            },
                             "subnet": {
                                 "id": "[variables('dbSubnetId')]"
                                 },
@@ -360,12 +337,7 @@
                         },
                         "diskSizeGb": 128
                     },
-                    "imageReference": {
-                        "publisher": "SUSE",
-                        "offer": "SLES-SAP",
-                        "sku": "12-sp4-gen2",
-                        "version": "latest"
-                    },
+                    "imageReference": "[variables('osImage')]",
                     "dataDisks": [
                         {
                             "lun": 0,

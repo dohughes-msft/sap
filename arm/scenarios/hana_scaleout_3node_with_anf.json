@@ -13,8 +13,16 @@
         "vnetId": "[resourceId(variables('vnetRg'), 'Microsoft.Network/virtualNetworks', variables('vnetName'))]",
         "anfSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('anfSubnetName'))]",
         "dbSubnetId": "[concat(variables('vnetId'), '/subnets/', variables('dbSubnetName'))]",
-        "sapSid": "hn1",
-        "label": "[concat('sap-', variables('sapSid'))]",
+        "hanaSid": "hn1",
+        "workerNodes": 2,
+        "standbyNodes": 1,
+        "dataSizeGb": 2048,
+        "logSizeGb": 1024,
+        "sharedSizeGb": 1024,
+        "totalSizeGb": "[add(add(mul(variables('dataSizeGb'), variables('workerNodes')), mul(variables('logSizeGb'), variables('workerNodes'))), variables('sharedSizeGb'))]",
+        "anfTier": "Premium",
+        "totalNodes": "[add(variables('workerNodes'), variables('standbyNodes'))]",
+        "label": "[concat('sap-', variables('hanaSid'), '-db')]",
         "ppgName": "[concat(variables('label'), '-ppg')]",
         "avsetName": "[concat(variables('label'), '-avset')]",
         "vmSize": "Standard_E16s_v3",
@@ -44,22 +52,22 @@
                 "[variables('anfAccountName')]"
             ],
             "properties": {
-                "serviceLevel": "Premium",
-                "size": 4398046511104
+                "serviceLevel": "[variables('anfTier')]",
+                "size": "[mul(variables('totalSizeGb'), 1073741824)]"
             }
         },
         {
             "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
             "apiVersion": "2020-02-01",
-            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-data-node1')]",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-data', copyIndex('volloop', 1))]",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
             ],
             "properties": {
-                "serviceLevel": "Premium",
-                "creationToken": "[concat(variables('label'), '-hana-data-node1')]",
-                "usageThreshold": 549755813888,
+                "serviceLevel": "[variables('anfTier')]",
+                "creationToken": "[concat(variables('label'), '-data', copyIndex('volloop', 1))]",
+                "usageThreshold": "[mul(variables('dataSizeGb'), 1073741824)]",
                 "exportPolicy": {
                     "rules": [
                         {
@@ -78,20 +86,24 @@
                 ],
                 "subnetId": "[variables('anfSubnetId')]",
                 "snapshotDirectoryVisible": true
+            },
+            "copy": {
+                "count": "[variables('workerNodes')]",
+                "name": "volloop"
             }
         },
         {
             "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
             "apiVersion": "2020-02-01",
-            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-data-node2')]",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-log', copyIndex('volloop', 1))]",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
             ],
             "properties": {
-                "serviceLevel": "Premium",
-                "creationToken": "[concat(variables('label'), '-hana-data-node2')]",
-                "usageThreshold": 549755813888,
+                "serviceLevel": "[variables('anfTier')]",
+                "creationToken": "[concat(variables('label'), '-log', copyIndex('volloop', 1))]",
+                "usageThreshold": "[mul(variables('logSizeGb'), 1073741824)]",
                 "exportPolicy": {
                     "rules": [
                         {
@@ -110,84 +122,24 @@
                 ],
                 "subnetId": "[variables('anfSubnetId')]",
                 "snapshotDirectoryVisible": true
+            },
+            "copy": {
+                "count": "[variables('workerNodes')]",
+                "name": "volloop"
             }
         },
         {
             "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
             "apiVersion": "2020-02-01",
-            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-log-node1')]",
+            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-shared')]",
             "location": "[variables('location')]",
             "dependsOn": [
                 "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
             ],
             "properties": {
-                "serviceLevel": "Premium",
-                "creationToken": "[concat(variables('label'), '-hana-log-node1')]",
-                "usageThreshold": 549755813888,
-                "exportPolicy": {
-                    "rules": [
-                        {
-                            "ruleIndex": 1,
-                            "unixReadOnly": false,
-                            "unixReadWrite": true,
-                            "cifs": false,
-                            "nfsv3": false,
-                            "nfsv41": true,
-                            "allowedClients": "0.0.0.0/0"
-                        }
-                    ]
-                },
-                "protocolTypes": [
-                    "NFSv4.1"
-                ],
-                "subnetId": "[variables('anfSubnetId')]",
-                "snapshotDirectoryVisible": true
-            }
-        },
-        {
-            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
-            "apiVersion": "2020-02-01",
-            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-log-node2')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
-            ],
-            "properties": {
-                "serviceLevel": "Premium",
-                "creationToken": "[concat(variables('label'), '-hana-log-node2')]",
-                "usageThreshold": 549755813888,
-                "exportPolicy": {
-                    "rules": [
-                        {
-                            "ruleIndex": 1,
-                            "unixReadOnly": false,
-                            "unixReadWrite": true,
-                            "cifs": false,
-                            "nfsv3": false,
-                            "nfsv41": true,
-                            "allowedClients": "0.0.0.0/0"
-                        }
-                    ]
-                },
-                "protocolTypes": [
-                    "NFSv4.1"
-                ],
-                "subnetId": "[variables('anfSubnetId')]",
-                "snapshotDirectoryVisible": true
-            }
-        },
-        {
-            "type": "Microsoft.NetApp/netAppAccounts/capacityPools/volumes",
-            "apiVersion": "2020-02-01",
-            "name": "[concat(variables('anfAccountName'), '/', variables('anfPoolName'), '/', variables('label'), '-hana-shared')]",
-            "location": "[variables('location')]",
-            "dependsOn": [
-                "[resourceId('Microsoft.NetApp/netAppAccounts/capacityPools', variables('anfAccountName'), variables('anfPoolName'))]"
-            ],
-            "properties": {
-                "serviceLevel": "Premium",
-                "creationToken": "[concat(variables('label'), '-hana-shared')]",
-                "usageThreshold": 549755813888,
+                "serviceLevel": "[variables('anfTier')]",
+                "creationToken": "[concat(variables('label'), '-shared')]",
+                "usageThreshold": "[mul(variables('sharedSizeGb'), 1073741824)]",
                 "exportPolicy": {
                     "rules": [
                         {
@@ -240,11 +192,11 @@
         {
             "type": "Microsoft.Network/networkInterfaces",
             "apiVersion": "2019-07-01",
-            "name": "[concat(variables('label'), '-db', copyIndex('nicloop', 1), '-nic1')]",
+            "name": "[concat(variables('label'), copyIndex('nicloop', 1), '-nic1')]",
             "location": "[variables('location')]",
             "dependsOn": [],
             "copy": {
-                "count": 3,
+                "count": "[variables('totalNodes')]",
                 "name": "nicloop"
             },
             "properties": {
@@ -265,7 +217,7 @@
             }
         },
         {
-            "name": "[concat(variables('label'), '-db', copyIndex('usrsapdisk', 1), '-datadisk1')]",
+            "name": "[concat(variables('label'), copyIndex('usrsapdisk', 1), '-datadisk1')]",
             "type": "Microsoft.Compute/disks",
             "apiVersion": "2019-07-01",
             "location": "[variables('location')]",
@@ -280,11 +232,11 @@
             },
             "copy": {
                 "name": "usrsapdisk",
-                "count": 3
+                "count": "[variables('totalNodes')]"
             }
         },
         {
-            "name": "[concat(variables('label'), '-db', copyIndex('hanabackupdisk', 1), '-datadisk2')]",
+            "name": "[concat(variables('label'), copyIndex('hanabackupdisk', 1), '-datadisk2')]",
             "type": "Microsoft.Compute/disks",
             "apiVersion": "2019-07-01",
             "location": "[variables('location')]",
@@ -299,21 +251,21 @@
             },
             "copy": {
                 "name": "hanabackupdisk",
-                "count": 3
+                "count": "[variables('totalNodes')]"
             }
         },
         {
             "type": "Microsoft.Compute/virtualMachines",
             "apiVersion": "2019-03-01",
-            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1))]",
+            "name": "[concat(variables('label'), copyIndex('vmloop', 1))]",
             "location": "[variables('location')]",
             "dependsOn": [
-                "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-nic1')]",
+                "[concat(variables('label'), copyIndex('vmloop', 1), '-nic1')]",
                 "[variables('avsetName')]"
             ],
             "tags": {},
             "copy": {
-                "count": 3,
+                "count": "[variables('totalNodes')]",
                 "name": "vmloop"
             },
             "properties": {
@@ -323,14 +275,14 @@
                 "networkProfile": {
                     "networkInterfaces": [
                         {
-                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-nic1'))]"
+                            "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/networkInterfaces', concat(variables('label'), copyIndex('vmloop', 1), '-nic1'))]"
                         }
                     ]
                 },
                 "storageProfile": {
                     "osDisk": {
                         "createOption": "fromImage",
-                        "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-os-disk1')]",
+                        "name": "[concat(variables('label'), copyIndex('vmloop', 1), '-os-disk1')]",
                         "caching": "ReadWrite",
                         "managedDisk": {
                             "storageAccountType": "Premium_LRS"
@@ -341,23 +293,23 @@
                     "dataDisks": [
                         {
                             "lun": 0,
-                            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk1')]",
+                            "name": "[concat(variables('label'), copyIndex('vmloop', 1), '-datadisk1')]",
                             "createOption": "Attach",
                             "caching": "ReadWrite",
                             "writeAcceleratorEnabled": false,
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk1'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('label'), copyIndex('vmloop', 1), '-datadisk1'))]"
                             },
                             "toBeDetached": false
                         },
                         {
                             "lun": 1,
-                            "name": "[concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk2')]",
+                            "name": "[concat(variables('label'), copyIndex('vmloop', 1), '-datadisk2')]",
                             "createOption": "Attach",
                             "caching": "ReadOnly",
                             "writeAcceleratorEnabled": false,
                             "managedDisk": {
-                                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('label'), '-db', copyIndex('vmloop', 1), '-datadisk2'))]"
+                                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('label'), copyIndex('vmloop', 1), '-datadisk2'))]"
                             },
                             "toBeDetached": false
                         }
@@ -367,7 +319,7 @@
                     "id": "[resourceId(resourceGroup().name, 'Microsoft.Compute/availabilitySets', variables('avsetName'))]"
                 },
                 "osProfile": {
-                    "computerName": "[concat(variables('label'), '-db', copyIndex('vmloop', 1))]",
+                    "computerName": "[concat(variables('label'), copyIndex('vmloop', 1))]",
                     "adminUsername": "[variables('adminUser')]",
                     "adminPassword": "[variables('adminPassword')]"
                 },

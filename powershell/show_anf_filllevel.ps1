@@ -8,7 +8,8 @@
 .OUTPUTS
     Display a list of account/pool/volume and current filling level
 .NOTES
-    None.
+    This script requires the Az module Az.NetAppFiles. You can install it with:
+    Install-Module -Name Az.NetAppFiles
 #>
 
 $resourceGroups = @("hanascaleout-rg1","hanascaleout-rg1b","anf-rg1")

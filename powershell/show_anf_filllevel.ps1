@@ -11,7 +11,7 @@
     None.
 #>
 
-$resourceGroups = @("hanascaleout-rg1","hanascaleout-rg1b")
+$resourceGroups = @("hanascaleout-rg1","hanascaleout-rg1b","anf-rg1")
 
 $endTime = Get-Date
 $startTime = $endTime.AddMinutes(-5)

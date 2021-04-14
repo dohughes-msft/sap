@@ -4,7 +4,7 @@
 .EXAMPLE
     PS C:\> show_anf_filllevel.ps1
 .INPUTS
-    You can either let the script find ANF-related resource groups automatically via Azure Resource Graph, or specify them manually in variable $resourceGroups below.
+    The script will find volumes using an Azure Resource Graph query for the current user
 .OUTPUTS
     Display a list of account/pool/volume and current filling level
 .NOTES

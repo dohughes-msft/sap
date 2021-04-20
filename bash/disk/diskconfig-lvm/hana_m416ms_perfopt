@@ -6,14 +6,11 @@
 4,SIDdatavg
 5,SIDlogvg
 6,SIDlogvg
-7,SIDsharedvg
-8,SIDbackupvg
-9,SIDbackupvg
-10,SIDbackupvg
+7,SIDlogvg
+8,SIDsharedvg
 
 [filesystems]
 SIDsapvg,SIDusrsaplv,/usr/sap/SID,100
 SIDdatavg,SIDhanadatalv,/hana/data/SID,100
 SIDlogvg,SIDhanaloglv,/hana/log/SID,100
 SIDsharedvg,SIDhanasharedlv,/hana/shared/SID,100
-SIDbackupvg,SIDhanabackuplv,/hana/backup/SID,100

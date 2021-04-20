@@ -8,6 +8,6 @@
 
 [filesystems]
 SIDsapvg,SIDusrsaplv,/usr/sap/SID,100
-SIDdatalogvg,SIDhanaloglv,/hana/log/SID,33
-SIDdatalogvg,SIDhanadatalv,/hana/data/SID,67
+SIDdatalogvg,SIDhanaloglv,/hana/log/SID,20
+SIDdatalogvg,SIDhanadatalv,/hana/data/SID,80
 SIDsharedvg,SIDhanasharedlv,/hana/shared/SID,100

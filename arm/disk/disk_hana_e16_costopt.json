@@ -18,11 +18,12 @@
                 "sku": "StandardSSD_LRS",
                 "caching": "ReadWrite",
                 "writeAcceleratorEnabled": false
+
             },
             {
                 "lun": "1",
                 "label": "hanadatalog-disk1",
-                "size": "1024",
+                "size": "64",
                 "sku": "Premium_LRS",
                 "caching": "None",
                 "writeAcceleratorEnabled": false
@@ -30,7 +31,7 @@
             {
                 "lun": "2",
                 "label": "hanadatalog-disk2",
-                "size": "1024",
+                "size": "64",
                 "sku": "Premium_LRS",
                 "caching": "None",
                 "writeAcceleratorEnabled": false
@@ -38,7 +39,7 @@
             {
                 "lun": "3",
                 "label": "hanadatalog-disk3",
-                "size": "1024",
+                "size": "64",
                 "sku": "Premium_LRS",
                 "caching": "None",
                 "writeAcceleratorEnabled": false
@@ -46,43 +47,19 @@
             {
                 "lun": "4",
                 "label": "hanadatalog-disk4",
-                "size": "1024",
+                "size": "64",
                 "sku": "Premium_LRS",
                 "caching": "None",
                 "writeAcceleratorEnabled": false
             },
             {
                 "lun": "5",
-                "label": "hanadatalog-disk5",
-                "size": "1024",
-                "sku": "Premium_LRS",
-                "caching": "None",
-                "writeAcceleratorEnabled": false
-            },
-            {
-                "lun": "6",
                 "label": "hanashared-disk1",
-                "size": "1024",
+                "size": "128",
                 "sku": "StandardSSD_LRS",
                 "caching": "ReadOnly",
                 "writeAcceleratorEnabled": false
-            },
-            {
-                "lun": "7",
-                "label": "hanabackup-disk1",
-                "size": "4096",
-                "sku": "StandardSSD_LRS",
-                "caching": "ReadOnly",
-                "writeAcceleratorEnabled": false
-            },
-            {
-                "lun": "8",
-                "label": "hanabackup-disk2",
-                "size": "4096",
-                "sku": "StandardSSD_LRS",
-                "caching": "ReadOnly",
-                "writeAcceleratorEnabled": false
-            }                    
+            }          
         ]
     },
     "resources": [

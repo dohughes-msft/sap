@@ -46,20 +46,36 @@
             },
             {
                 "lun": "4",
-                "label": "hanashared-disk1",
+                "label": "hanadatalog-disk4",
                 "size": "512",
-                "sku": "StandardSSD_LRS",
-                "caching": "ReadOnly",
+                "sku": "Premium_LRS",
+                "caching": "None",
                 "writeAcceleratorEnabled": false
             },
             {
                 "lun": "5",
-                "label": "hanabackup-disk1",
+                "label": "hanadatalog-disk5",
                 "size": "512",
+                "sku": "Premium_LRS",
+                "caching": "None",
+                "writeAcceleratorEnabled": false
+            },
+            {
+                "lun": "6",
+                "label": "hanadatalog-disk6",
+                "size": "512",
+                "sku": "Premium_LRS",
+                "caching": "None",
+                "writeAcceleratorEnabled": false
+            },
+            {
+                "lun": "7",
+                "label": "hanashared-disk1",
+                "size": "1024",
                 "sku": "StandardSSD_LRS",
                 "caching": "ReadOnly",
                 "writeAcceleratorEnabled": false
-            }           
+            }                    
         ]
     },
     "resources": [

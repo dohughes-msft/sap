@@ -56,11 +56,14 @@
         "vmSize": {
             "type": "string",
             "allowedValues": [
-                "Standard_DS14_v2",
                 "Standard_E16s_v3",
+                "Standard_E16ds_v4",
+                "Standard_E20ds_v4",
                 "Standard_E32s_v3",
+                "Standard_E32ds_v4",
+                "Standard_E48ds_v4",
                 "Standard_E64s_v3",
-                "Standard_GS5",
+                "Standard_E64ds_v4",
                 "Standard_M32ts",
                 "Standard_M32ls",
                 "Standard_M64ls",
@@ -73,17 +76,17 @@
                 "Standard_M416s_v2",
                 "Standard_M416ms_v2"
             ],
-            "defaultValue": "Standard_E16s_v3",
+            "defaultValue": "Standard_E16ds_v4",
             "metadata": {
                 "description": "Virtual machine size. Also determines which disks will be attached."
             }
         },
         "role": {
             "type": "string",
-            "defaultValue": "Production",
+            "defaultValue": "Performance-optimized",
             "allowedValues": [
-                "Production",
-                "Non-production"
+                "Performance-optimized",
+                "Cost-optimized"
             ],
             "metadata": {
                 "description": "This will affect the storage SKUs used."
@@ -142,147 +145,197 @@
         "nsgId": {
             "id": "[resourceId(variables('nsgRg'), 'Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroup'))]"
         },
-        "storageSku": "[if(equals(parameters('role'), 'Production'), 'Premium_LRS', 'StandardSSD_LRS')]",
+        "storageSku": "[if(equals(parameters('role'), 'Performance-optimized'), 'Premium_LRS', 'StandardSSD_LRS')]",
         "diskDeploymentName": "[concat(deployment().name, '_disk')]",
         "vmDiskTemplate": {
             "Standard_E16s_v3": {
-                "Production": {
-                    "templateFile": "disk_hana_nonprod_e16.json",
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e16_perfopt.json",
                     "diskCount": 6
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_e16.json",
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e16_costopt.json",
+                    "diskCount": 6
+                }
+            },
+            "Standard_E16ds_v4": {
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e16_perfopt.json",
+                    "diskCount": 6
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e16_costopt.json",
+                    "diskCount": 6
+                }
+            },
+            "Standard_E20ds_v4": {
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e20_perfopt.json",
+                    "diskCount": 6
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e20_costopt.json",
                     "diskCount": 6
                 }
             },
             "Standard_E32s_v3": {
-                "Production": {
-                    "templateFile": "disk_hana_nonprod_e32.json",
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e32_perfopt.json",
                     "diskCount": 6
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_e32.json",
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e32_costopt.json",
+                    "diskCount": 6
+                }
+            },
+            "Standard_E32ds_v4": {
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e32_perfopt.json",
+                    "diskCount": 6
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e32_costopt.json",
+                    "diskCount": 6
+                }
+            },
+            "Standard_E48ds_v4": {
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e48_perfopt.json",
+                    "diskCount": 6
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e48_costopt.json",
                     "diskCount": 6
                 }
             },
             "Standard_E64s_v3": {
-                "Production": {
-                    "templateFile": "disk_hana_nonprod_e64.json",
-                    "diskCount": 6
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e64v3_perfopt.json",
+                    "diskCount": 8
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_e64.json",
-                    "diskCount": 6
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e64v3_costopt.json",
+                    "diskCount": 8
+                }
+            },
+            "Standard_E64ds_v4": {
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_e64v4_perfopt.json",
+                    "diskCount": 9
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_e64v4_costopt.json",
+                    "diskCount": 9
                 }
             },
             "Standard_M32ts": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m32ts.json",
-                    "diskCount": 8
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m32ts_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m32ts.json",
-                    "diskCount": 6
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m32ts_costopt.json",
+                    "diskCount": 5
                 }
             },
             "Standard_M32ls": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m32ls.json",
-                    "diskCount": 8
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m32ls_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m32ls.json",
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m32ls_costopt.json",
                     "diskCount": 6
                 }
             },
             "Standard_M64ls": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m64ls.json",
-                    "diskCount": 8
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m64ls_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m64ls.json",
-                    "diskCount": 6
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m64ls_costopt.json",
+                    "diskCount": 9
                 }
             },
             "Standard_M64s": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m64s.json",
-                    "diskCount": 10
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m64s_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m64s.json",
-                    "diskCount": 6
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m64s_costopt.json",
+                    "diskCount": 9
                 }
             },
             "Standard_M64ms": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m64ms.json",
-                    "diskCount": 10
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m64ms_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m64ms.json",
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m64ms_costopt.json",
                     "diskCount": 8
                 }
             },
             "Standard_M128s": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m128s.json",
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m128s_perfopt.json",
                     "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m128s.json",
-                    "diskCount": 7
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m128s_costopt.json",
+                    "diskCount": 8
                 }
             },
             "Standard_M128ms": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m128ms.json",
-                    "diskCount": 13
-                },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m128ms.json",
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m128ms_perfopt.json",
                     "diskCount": 9
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m128ms_costopt.json",
+                    "diskCount": 7
                 }
             },
             "Standard_M208s_v2": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m208s.json",
-                    "diskCount": 11
-                },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m208s.json",
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m208s_perfopt.json",
                     "diskCount": 9
+                },
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m208s_costopt.json",
+                    "diskCount": 6
                 }
             },
             "Standard_M208ms_v2": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m208ms.json",
-                    "diskCount": 11
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m208ms_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m208ms.json",
-                    "diskCount": 10
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m208ms_costopt.json",
+                    "diskCount": 6
                 }
             },
             "Standard_M416s_v2": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m416s.json",
-                    "diskCount": 11
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m416s_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m416s.json",
-                    "diskCount": 10
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m416s_costopt.json",
+                    "diskCount": 6
                 }
             },
             "Standard_M416ms_v2": {
-                "Production": {
-                    "templateFile": "disk_hana_prod_m416ms.json",
-                    "diskCount": 16
+                "Performance-optimized": {
+                    "templateFile": "disk_hana_m416ms_perfopt.json",
+                    "diskCount": 9
                 },
-                "Non-Production": {
-                    "templateFile": "disk_hana_nonprod_m416ms.json",
-                    "diskCount": 10
+                "Cost-optimized": {
+                    "templateFile": "disk_hana_m416ms_costopt.json",
+                    "diskCount": 9
                 }
             }
         },

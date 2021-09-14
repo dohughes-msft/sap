@@ -224,7 +224,7 @@
             "properties": {
                 "diskSizeGB": 64,
                 "creationData": {
-                    "createOption": "empty"
+                    "createOption": "Empty"
                 }
             },
             "sku": {
@@ -243,7 +243,7 @@
             "properties": {
                 "diskSizeGB": 256,
                 "creationData": {
-                    "createOption": "empty"
+                    "createOption": "Empty"
                 }
             },
             "sku": {
@@ -281,7 +281,7 @@
                 },
                 "storageProfile": {
                     "osDisk": {
-                        "createOption": "fromImage",
+                        "createOption": "FromImage",
                         "name": "[concat(variables('label'), copyIndex('vmloop', 1), '-os-disk1')]",
                         "caching": "ReadWrite",
                         "managedDisk": {

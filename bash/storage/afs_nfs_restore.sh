@@ -1,21 +1,23 @@
 #!/bin/bash
 
-AZCOPY=/tmp/azcopy_linux_amd64_10.13.0/azcopy
-NFSFS=/mnt/nfspremiumtestfs/sapsid1/restore
-METADATA=metadata.sav
-SANAME=nfsbackup.blob.core.windows.net
-SACONT=sapsid1
+AZCOPY=/tmp/azcopy_linux_amd64_10.13.0/azcopy              # Path to azcopy
+SHARENAME=/mnt/nfspremiumtestfs/sapsid1/restore            # NFS share/folder to restore to
+SANAME=nfsbackup                                           # Storage account name
+SACONT=sapsid1                                             # Container name
+
 # It is better to define the SAS as an environment variable
 #BLOBSAS="?sp=racwdl--------------"
 
+METADATA=metadata.sav
+
 # Create the target if it does not exist
-mkdir -p $NFSFS
+mkdir -p $SHARENAME
 
 # Restore files
-$AZCOPY sync "https://${SANAME}/${SACONT}${BLOBSAS}" "$NFSFS" --recursive=true --delete-destination=true
+$AZCOPY sync "https://${SANAME}/${SACONT}${BLOBSAS}" "$SHARENAME" --recursive=true --delete-destination=true
 
 # Restore permissions
-cd $NFSFS
+cd $SHARENAME
 
 while IFS="," read -r FILENAME OWNER GROUP PERMS LINKTARGET || [ -n "$FILENAME" ]
 do

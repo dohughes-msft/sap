@@ -1,9 +1,10 @@
 #!/bin/bash
 
-AZCOPY=/tmp/azcopy_linux_amd64_10.13.0/azcopy              # Path to azcopy
-SHARENAME=/mnt/nfspremiumtestfs/sapsid1/restore            # NFS share/folder to restore to
-SANAME=nfsbackup                                           # Storage account name
-SACONT=sapsid1                                             # Container name
+AZCOPY=azcopy                                 # Path to azcopy
+SHARENAME=/sapmnt/SID/restore                 # NFS share/folder to restore to
+SANAME=sapnfsbackup                           # Storage account name
+SACONT=sid                                    # Container name
+SAFOLDER=sapmnt                               # Folder name
 
 # It is better to define the SAS as an environment variable
 #BLOBSAS="?sp=racwdl--------------"
@@ -14,7 +15,7 @@ METADATA=metadata.sav
 mkdir -p $SHARENAME
 
 # Restore files
-$AZCOPY sync "https://${SANAME}/${SACONT}${BLOBSAS}" "$SHARENAME" --recursive=true --delete-destination=true
+$AZCOPY sync "https://${SANAME}.blob.core.windows.net/${SACONT}/${SAFOLDER}${BLOBSAS}" "$SHARENAME" --recursive=true --delete-destination=true
 
 # Restore permissions
 cd $SHARENAME

@@ -3,6 +3,8 @@ Azure Files NFS is not yet integrated into Azure Backup. The scripts here can be
 
 Blob storage does not support permissions or symbolic links so this metadata is handled specially.
 
+**DISCLAIMER: These scripts are not tested for all possible use cases and are to used AT YOUR OWN RISK.**
+
 ## Notes and requirements
 
 1. For maximum data protection, enable blob versioning and soft delete on the target storage account.

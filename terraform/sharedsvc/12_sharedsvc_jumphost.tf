@@ -1,28 +1,28 @@
-variable "advm_prefix" {
+variable "jumphost_vmprefix" {
   type = string
-  default = "advm"
+  default = "jumphost"
 }
-variable "advm_count" {
+variable "jumphost_vmcount" {
   type = number
-  default = 2
+  default = 1
 }
-variable "advm_ip_addresses" {
+variable "jumphost_ip_addresses" {
   type    = list(string)
-  default = ["10.0.0.5","10.0.0.6"]
+  default = ["10.0.0.4"]
 }
 
-resource "azurerm_public_ip" "advm" {
-  count               = var.advm_count
-  name                = "${var.advm_prefix}${count.index+1}-pip"
+resource "azurerm_public_ip" "jumphost" {
+  count               = var.jumphost_vmcount
+  name                = "${var.jumphost_vmprefix}${count.index+1}-pip"
   resource_group_name = azurerm_resource_group.shared-services-ne-rg1.name
   location            = azurerm_resource_group.shared-services-ne-rg1.location
   allocation_method   = "Dynamic"
-  domain_name_label   ="${var.advm_prefix}${count.index+1}"
+  domain_name_label   ="${var.jumphost_vmprefix}${count.index+1}"
 }
 
-resource "azurerm_network_interface" "advm" {
-  count               = var.advm_count
-  name                = "${var.advm_prefix}${count.index+1}-nic"
+resource "azurerm_network_interface" "jumphost" {
+  count               = var.jumphost_vmcount
+  name                = "${var.jumphost_vmprefix}${count.index+1}-nic"
   resource_group_name = azurerm_resource_group.shared-services-ne-rg1.name
   location            = azurerm_resource_group.shared-services-ne-rg1.location
 
@@ -30,14 +30,14 @@ resource "azurerm_network_interface" "advm" {
     name                          = "ipconfig1"
     subnet_id                     = data.terraform_remote_state.connectivity.outputs.mgmt_subnet_id
     private_ip_address_allocation = "Static"
-    private_ip_address            = var.advm_ip_addresses[count.index]
-    public_ip_address_id          = azurerm_public_ip.advm[count.index].id
+    private_ip_address            = var.jumphost_ip_addresses[count.index]
+    public_ip_address_id          = azurerm_public_ip.jumphost[count.index].id
   }
 }
 
-resource "azurerm_windows_virtual_machine" "advm" {
-  count                           = var.advm_count
-  name                            = "${var.advm_prefix}${count.index+1}"
+resource "azurerm_windows_virtual_machine" "jumphost" {
+  count                           = var.jumphost_vmcount
+  name                            = "${var.jumphost_vmprefix}${count.index+1}"
   resource_group_name             = azurerm_resource_group.shared-services-ne-rg1.name
   location                        = azurerm_resource_group.shared-services-ne-rg1.location
   size                            = "Standard_D4ds_v5"
@@ -47,7 +47,7 @@ resource "azurerm_windows_virtual_machine" "advm" {
     type = "SystemAssigned"
   }
   network_interface_ids = [
-    azurerm_network_interface.advm[count.index].id,
+    azurerm_network_interface.jumphost[count.index].id,
   ]
 
   source_image_reference {
@@ -63,5 +63,3 @@ resource "azurerm_windows_virtual_machine" "advm" {
   }
   boot_diagnostics {}
 }
-
-# resource "azurerm_windows_virtual_machine" "advm" {}

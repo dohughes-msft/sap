@@ -37,3 +37,7 @@ resource "azurerm_subnet" "hub-ne-vnet-firewall-subnet" {
 output "mgmt_subnet_id" {
   value = azurerm_subnet.hub-ne-vnet-management-subnet.id
 }
+
+output "vmfw_subnet_id" {
+  value = azurerm_subnet.hub-ne-vnet-firewall-subnet.id
+}

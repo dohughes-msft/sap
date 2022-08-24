@@ -2,10 +2,12 @@ variable "advm_prefix" {
   type = string
   default = "advm"
 }
+
 variable "advm_count" {
   type = number
   default = 2
 }
+
 variable "advm_ip_addresses" {
   type    = list(string)
   default = ["10.0.0.5","10.0.0.6"]

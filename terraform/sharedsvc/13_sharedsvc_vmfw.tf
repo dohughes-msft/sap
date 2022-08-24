@@ -6,6 +6,7 @@ variable "vmfw_vmcount" {
   type = number
   default = 1
 }
+
 variable "vmfw_ip_addresses" {
   type    = list(string)
   default = ["10.0.3.4"]

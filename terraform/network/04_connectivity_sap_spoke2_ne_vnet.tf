@@ -20,7 +20,7 @@ resource "azurerm_subnet" "sap-spoke2-ne-vnet-app-subnet" {
   address_prefixes     = ["10.2.1.0/24"]
 }
 
-resource "azurerm_subnet" "sap-spoke2-ne-vnet-we-subnet" {
+resource "azurerm_subnet" "sap-spoke2-ne-vnet-web-subnet" {
   name                 = "web-subnet"
   resource_group_name  = azurerm_resource_group.connectivity-ne-rg1.name
   virtual_network_name = azurerm_virtual_network.sap-spoke2-ne-vnet.name
@@ -42,4 +42,20 @@ resource "azurerm_subnet" "sap-spoke2-ne-vnet-anf-subnet" {
       ]
     }
   }
+}
+
+output "spoke2_db_subnet_id" {
+  value = azurerm_subnet.sap-spoke2-ne-vnet-db-subnet.id
+}
+
+output "spoke2_app_subnet_id" {
+  value = azurerm_subnet.sap-spoke2-ne-vnet-app-subnet.id
+}
+
+output "spoke2_web_subnet_id" {
+  value = azurerm_subnet.sap-spoke2-ne-vnet-web-subnet.id
+}
+
+output "spoke2_anf_subnet_id" {
+  value = azurerm_subnet.sap-spoke2-ne-vnet-anf-subnet.id
 }

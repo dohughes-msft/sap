@@ -16,7 +16,7 @@ param (
     [string]$export
 )
 
-$netAppVolumes = Search-AzGraph -Query "Resources | where type == 'microsoft.netapp/netappaccounts/capacitypools/volumes' | project name, id, size=properties.usageThreshold, tier=properties.serviceLevel | order by name"
+$netAppVolumes = Search-AzGraph -First 200 -Query "Resources | where type == 'microsoft.netapp/netappaccounts/capacitypools/volumes' | project name, id, size=properties.usageThreshold, tier=properties.serviceLevel | order by name"
 
 $endTime = Get-Date
 $startTime = $endTime.AddMinutes(-5)

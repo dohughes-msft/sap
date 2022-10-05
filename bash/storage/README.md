@@ -1,6 +1,10 @@
 # Backup and restore of Azure Files NFS
 Azure Files NFS is not yet integrated into Azure Backup. The scripts here can be used to perform basic backup/restore of Azure Files NFS shares to blob storage.
 
+## About blob storage
+
+Azure blob storage is designed for high-speed ingestion and restore of massive amounts of data to a single object. It does this very well, but at the expense of metadata operations, which take longer. Fewer, larger files will therefore be faster to back up and restore than a large number of smaller files. Your mileage may vary so be sure to test both backup and restore.
+
 Blob storage does not support permissions or symbolic links so this metadata is handled specially.
 
 **DISCLAIMER: These scripts are not tested for all possible use cases and are to used AT YOUR OWN RISK.**

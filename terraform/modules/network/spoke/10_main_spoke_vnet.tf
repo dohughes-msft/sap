@@ -42,6 +42,9 @@ resource "azurerm_virtual_network_peering" "spoke-to-hub" {
   allow_forwarded_traffic = true
 }
 
+output "vnet_resource_id" {
+  value = azurerm_virtual_network.main.id
+}
 
 # resource "azurerm_subnet" "sap-spoke1-ne-vnet-db-subnet" {
 #   name                 = "db-subnet"

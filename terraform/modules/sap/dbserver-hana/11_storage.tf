@@ -36,7 +36,7 @@ resource "azurerm_virtual_machine_data_disk_attachment" "shared" {
 
 resource "azurerm_managed_disk" "data" {
   count                = var.vm_count*local.disk_config[var.vm_size].datacount
-  name                 = "${var.vm_name}${count.index%2+1}-datadisk${floor(count.index/2)+1}"
+  name                 = "${var.vm_name}${count.index%var.vm_count+1}-datadisk${floor(count.index/var.vm_count)+1}"
   resource_group_name  = var.resource_group_name
   location             = var.location
   storage_account_type = "Premium_LRS"
@@ -47,25 +47,26 @@ resource "azurerm_managed_disk" "data" {
 resource "azurerm_virtual_machine_data_disk_attachment" "data" {
   count              = var.vm_count*local.disk_config[var.vm_size].datacount
   managed_disk_id    = azurerm_managed_disk.data[count.index].id
-  virtual_machine_id = azurerm_linux_virtual_machine.main[count.index%2].id
-  lun                = floor(count.index/2)+2
+  virtual_machine_id = azurerm_linux_virtual_machine.main[count.index%var.vm_count].id
+  lun                = floor(count.index/var.vm_count)+2
   caching            = "None"
 }
 
-# resource "azurerm_managed_disk" "log" {
-#   count                = local.disk_config[var.vmsize].logcount
-#   name                 = "${var.prefix}-logdisk${count.index+1}"
-#   location             = azurerm_resource_group.main.location
-#   resource_group_name  = azurerm_resource_group.main.name
-#   storage_account_type = "Premium_LRS"
-#   create_option        = "Empty"
-#   disk_size_gb         = local.disk_config[var.vmsize].logsize
-# }
 
-# resource "azurerm_virtual_machine_data_disk_attachment" "log" {
-#   count              = local.disk_config[var.vmsize].logcount
-#   managed_disk_id    = azurerm_managed_disk.log[count.index].id
-#   virtual_machine_id = azurerm_linux_virtual_machine.main.id
-#   lun                = count.index+local.disk_config[var.vmsize].datacount+2
-#   caching            = "None"
-# }
+resource "azurerm_managed_disk" "log" {
+  count                = var.vm_count*local.disk_config[var.vm_size].logcount
+  name                 = "${var.vm_name}${count.index%var.vm_count+1}-logdisk${floor(count.index/var.vm_count)+1}"
+  resource_group_name  = var.resource_group_name
+  location             = var.location
+  storage_account_type = "Premium_LRS"
+  create_option        = "Empty"
+  disk_size_gb         = local.disk_config[var.vm_size].logsize
+}
+
+resource "azurerm_virtual_machine_data_disk_attachment" "log" {
+  count              = var.vm_count*local.disk_config[var.vm_size].logcount
+  managed_disk_id    = azurerm_managed_disk.log[count.index].id
+  virtual_machine_id = azurerm_linux_virtual_machine.main[count.index%var.vm_count].id
+  lun                = floor(count.index/var.vm_count)+local.disk_config[var.vm_size].datacount+2
+  caching            = "None"
+}

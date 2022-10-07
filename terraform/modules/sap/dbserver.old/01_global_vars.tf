@@ -6,8 +6,19 @@ variable "location" {
   type = string
 }
 
-variable "vm_name" {
+variable "admin_password" {
   type = string
+  sensitive = true
+}
+
+variable "prefix" {
+  type = string
+  default = "sapvm"
+}
+
+variable "vmcount" {
+  type = number
+  default = 1
 }
 
 variable "subnet_id" {
@@ -30,5 +41,4 @@ variable "admin_user" {
 
 variable "admin_password" {
   type = string
-  sensitive = true
 }

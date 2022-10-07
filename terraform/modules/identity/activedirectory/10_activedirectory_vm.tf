@@ -10,6 +10,7 @@ resource "azurerm_network_interface" "main" {
   name                = "${var.vm_name}-nic"
   resource_group_name = var.resource_group_name
   location            = var.location
+  enable_accelerated_networking = true
 
   ip_configuration {
     name                          = "ipconfig1"

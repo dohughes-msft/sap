@@ -6,8 +6,18 @@ variable "location" {
   type = string
 }
 
+variable "sid" {
+  type = string
+}
+
 variable "vm_name" {
   type = string
+  default = "sapvm"
+}
+
+variable "vm_count" {
+  type = number
+  default = 1
 }
 
 variable "subnet_id" {
@@ -15,7 +25,7 @@ variable "subnet_id" {
 }
 
 variable "ip_address" {
-  type = string
+  type = list(string)
 }
 
 variable "vm_size" {

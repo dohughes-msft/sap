@@ -1,8 +1,3 @@
-resource "azurerm_resource_group" "identity-northeurope" {
-  name     = "identity-northeurope-rg1"
-  location = "northeurope"
-}
-
 module "activedirectory-northeurope-vm1" {
   source = "../modules/identity/activedirectory"
   location = "northeurope"

@@ -3,7 +3,7 @@ resource "azurerm_public_ip" "main" {
   resource_group_name = var.resource_group_name
   location            = var.location
   allocation_method   = "Dynamic"
-  #domain_name_label   ="${var.advm_prefix}${count.index+1}"
+  domain_name_label   ="${var.vm_name}"
 }
 
 resource "azurerm_network_interface" "main" {

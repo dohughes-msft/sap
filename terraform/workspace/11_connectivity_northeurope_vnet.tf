@@ -26,9 +26,9 @@ module "spoke-ne-sap-dev" {
   resource_group_name = azurerm_resource_group.connectivity-northeurope.name
   vnet_name = "spoke-ne-sap-dev"
   address_space = ["10.1.0.0/16"]
-  subnet_names = ["db-subnet","app-subnet","web-subnet","anf-subnet"]
-  subnet_ip_ranges = ["10.1.0.0/24","10.1.1.0/24","10.1.2.0/24","10.1.10.0/24"]
-  subnet_delegations = ["","","","anf"]
+  subnet_names = ["db-subnet","app-subnet","web-subnet","anf-subnet","tools-subnet"]
+  subnet_ip_ranges = ["10.1.0.0/24","10.1.1.0/24","10.1.2.0/24","10.1.10.0/24","10.1.3.0/24"]
+  subnet_delegations = ["","","","anf",""]
   dns_servers = ["10.0.0.5","10.0.0.6"]
   hub_vnet_resource_group_name = azurerm_resource_group.connectivity-northeurope.name
   hub_vnet_name = "hub-ne-vnet"

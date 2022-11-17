@@ -10,10 +10,11 @@ resource "azurerm_public_ip" "main" {
 }
 
 resource "azurerm_network_interface" "main" {
-  count                = var.vm_count
-  name                 = "${var.vm_name}${count.index+1}-nic"
-  resource_group_name  = var.resource_group_name
-  location             = var.location
+  count                         = var.vm_count
+  name                          = "${var.vm_name}${count.index+1}-nic"
+  resource_group_name           = var.resource_group_name
+  location                      = var.location
+  enable_accelerated_networking = true
 
   ip_configuration {
     name                          = "ipconfig1"
@@ -41,9 +42,9 @@ resource "azurerm_linux_virtual_machine" "main" {
   ]
 
   source_image_reference {
-    publisher = "canonical"
-    offer     = "0001-com-ubuntu-server-focal"
-    sku       = "20_04-lts-gen2"
+    publisher = "suse"
+    offer     = "sles-sap-12-sp5"
+    sku       = "gen2"
     version   = "latest"
   }
 

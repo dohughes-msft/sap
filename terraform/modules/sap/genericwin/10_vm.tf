@@ -25,13 +25,12 @@ resource "azurerm_network_interface" "main" {
   }
 }
 
-resource "azurerm_linux_virtual_machine" "main" {
+resource "azurerm_windows_virtual_machine" "main" {
   count                           = var.vm_count
   name                            = "${var.vm_name}${count.index+1}"
   resource_group_name             = var.resource_group_name
   location                        = var.location
   size                            = var.vm_size
-  disable_password_authentication = false
   admin_username                  = var.admin_user
   admin_password                  = var.admin_password
   identity {
@@ -42,9 +41,9 @@ resource "azurerm_linux_virtual_machine" "main" {
   ]
 
   source_image_reference {
-    publisher = "suse"
-    offer     = "sles-sap-12-sp5"
-    sku       = "gen2"
+    publisher = "MicrosoftWindowsServer"
+    offer     = "WindowsServer"
+    sku       = "2019-datacenter-gensecond"
     version   = "latest"
   }
 

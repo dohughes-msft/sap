@@ -42,9 +42,9 @@ resource "azurerm_linux_virtual_machine" "main" {
   ]
 
   source_image_reference {
-    publisher = "canonical"
-    offer     = "0001-com-ubuntu-server-focal"
-    sku       = "20_04-lts-gen2"
+    publisher = "suse"
+    offer     = "sles-sap-12-sp5"
+    sku       = "gen2"
     version   = "latest"
   }
 

@@ -5,7 +5,7 @@ resource "azurerm_managed_disk" "usrsap" {
   resource_group_name  = var.resource_group_name
   storage_account_type = "Premium_LRS"
   create_option        = "Empty"
-  disk_size_gb         = 64
+  disk_size_gb         = 128
 }
 
 resource "azurerm_virtual_machine_data_disk_attachment" "usrsap" {

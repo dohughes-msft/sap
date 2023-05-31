@@ -9,17 +9,6 @@ module "hub-ne-vnet" {
   dns_servers = ["10.0.0.5","10.0.0.6"]
 }
 
-module "onprem-ne-vnet" {
-  source = "../modules/network/hub"
-  location = "northeurope"
-  resource_group_name = azurerm_resource_group.onprem-northeurope.name
-  vnet_name = "onprem-ne-vnet"
-  address_space = ["10.10.0.0/16"]
-  subnet_names = ["onprem-workload-subnet","GatewaySubnet"]
-  subnet_ip_ranges = ["10.10.0.0/24","10.10.10.0/24"]
-  dns_servers = []
-}
-
 module "spoke-ne-sap-dev" {
   source = "../modules/network/spoke"
   location = "northeurope"
@@ -44,6 +33,21 @@ module "spoke-ne-sap-prd" {
   subnet_names = ["db-subnet","app-subnet","web-subnet","anf-subnet"]
   subnet_ip_ranges = ["10.2.0.0/24","10.2.1.0/24","10.2.2.0/24","10.2.10.0/24"]
   subnet_delegations = ["","","","anf"]
+  dns_servers = ["10.0.0.5","10.0.0.6"]
+  hub_vnet_resource_group_name = azurerm_resource_group.connectivity-northeurope.name
+  hub_vnet_name = "hub-ne-vnet"
+  hub_vnet_id = module.hub-ne-vnet.vnet_resource_id
+}
+
+module "spoke-ne-sandbox" {
+  source = "../modules/network/spoke"
+  location = "northeurope"
+  resource_group_name = azurerm_resource_group.connectivity-northeurope.name
+  vnet_name = "spoke-ne-sandbox"
+  address_space = ["10.3.0.0/16"]
+  subnet_names = ["sbx-subnet","anf-subnet"]
+  subnet_ip_ranges = ["10.3.0.0/24","10.3.10.0/24"]
+  subnet_delegations = ["","anf"]
   dns_servers = ["10.0.0.5","10.0.0.6"]
   hub_vnet_resource_group_name = azurerm_resource_group.connectivity-northeurope.name
   hub_vnet_name = "hub-ne-vnet"

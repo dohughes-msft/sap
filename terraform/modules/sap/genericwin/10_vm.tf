@@ -48,7 +48,7 @@ resource "azurerm_windows_virtual_machine" "main" {
   }
 
   os_disk {
-    storage_account_type = "Premium_LRS"
+    storage_account_type = "Standard_LRS"
     caching              = "ReadWrite"
   }
   boot_diagnostics {}

@@ -15,3 +15,17 @@ module "sap-ne-shared-sapdownload" {
   admin_user = "adminuser"
   admin_password = var.admin_password
 }
+
+resource "azurerm_storage_account" "sapnebackup" {
+  name                     = "sapnebackup"
+  resource_group_name      = azurerm_resource_group.sap-northeurope-shared.name
+  location                 = azurerm_resource_group.sap-northeurope-shared.location
+  account_tier             = "Standard"
+  account_replication_type = "LRS"
+}
+
+resource "azurerm_storage_share" "sapnebackup-sapbackup" {
+  name                 = "sapbackup"
+  storage_account_name = azurerm_storage_account.sapnebackup.name
+  quota                = 1000
+}

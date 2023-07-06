@@ -20,7 +20,9 @@
     .\get_cost_history.ps1 -resourceId "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/xxxxxxxx/providers/microsoft.compute/disks/xxxxxxx" -startDate "2023-01-01" -endDate "2023-06-30"
 
 .NOTES
-
+    Documentation links:
+    https://learn.microsoft.com/en-us/rest/api/cost-management/query/usage
+    https://learn.microsoft.com/en-us/powershell/module/az.costmanagement/invoke-azcostmanagementquery
 #>
 
 param (

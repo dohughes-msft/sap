@@ -86,6 +86,7 @@ $aggregation = @{
 # For the purposes of this script we will set the scope to be the resource group, which we can extract from the resource ID.
 $resourceId.Split("/")[1..4] | ForEach {$scope += "/$_"}
 
+# Create the filter object based on the resource ID
 $dimensions = New-AzCostManagementQueryComparisonExpressionObject -Name 'ResourceId' -Value $resourceId -Operator 'In'
 $filter = New-AzCostManagementQueryFilterObject -Dimensions $dimensions
 $queryResult = Invoke-AzCostManagementQuery `

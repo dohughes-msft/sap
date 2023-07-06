@@ -90,6 +90,7 @@ $aggregation = @{
 $resourceId.Split("/")[1..4] | ForEach {$scope += "/$_"}
 
 # Create the filter object based on the resource ID
+# We can potentially expand this and pass it an array of resource IDs to get the data for multiple resources with a single API call.
 $dimensions = New-AzCostManagementQueryComparisonExpressionObject -Name 'ResourceId' -Value $resourceId -Operator 'In'
 $filter = New-AzCostManagementQueryFilterObject -Dimensions $dimensions
 $queryResult = Invoke-AzCostManagementQuery `

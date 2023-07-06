@@ -24,12 +24,9 @@
 
 param (
     [Parameter(Mandatory=$true)][string]$resourceId,
-    [string]$startDate,
-    [string]$endDate
+    [string]$startDate = (Get-Date).AddMonths(-6).ToString("yyyy-MM-01"),               # the first day of the month 6 months ago
+    [string]$endDate = (Get-Date).AddDays(-1 * (Get-Date).Day).ToString("yyyy-MM-dd")   # the last day of the previous month
 )
-
-$startDate = (Get-Date).AddMonths(-6).ToString("yyyy-MM-01")                      # the first day of the month 6 months ago
-$endDate = (Get-Date).AddDays(-1 * (Get-Date).Day).ToString("yyyy-MM-dd")         # the last day of the previous month
 
 $timeframe = "Custom"            # Supported types are BillingMonthToDate, Custom, MonthToDate, TheLastBillingMonth, TheLastMonth, WeekToDate
 $granularity = "Monthly"         # Supported types are Daily and Monthly so far. Omit just to get the total cost.

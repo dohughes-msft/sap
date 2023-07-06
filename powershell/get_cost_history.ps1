@@ -5,9 +5,9 @@
     Requires Az.CostManagement module
 
 .PARAMETER ParameterName
-    $resourceID : The resource ID of the resource to be examined (mandatory)
-    $startDate : The start date of the period to be examined (default is the first day of the month, 6 months ago)
-    $endDate : The end date of the period to be examined (default is the last day of the previous month)
+    $resourceID (mandatory) : The resource ID of the resource to be examined
+    $startDate  (optional)  : The start date of the period to be examined (default is the first day of the month, 6 months ago)
+    $endDate    (optional)  : The end date of the period to be examined (default is the last day of the previous month)
 
 .INPUTS
     None
@@ -16,6 +16,7 @@
     A table showing the cost history of the given resource over the requested period
 
 .EXAMPLE
+    .\get_cost_history.ps1 -resourceId "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/xxxxxxxx/providers/microsoft.compute/disks/xxxxxxx"
     .\get_cost_history.ps1 -resourceId "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/xxxxxxxx/providers/microsoft.compute/disks/xxxxxxx" -startDate "2023-01-01" -endDate "2023-06-30"
 
 .NOTES

@@ -1,16 +1,8 @@
-#$subscriptionId = "your-subscription-id"
-#$resourceId = "/subscriptions/$subscriptionId/resourceGroups/your-resource-group/providers/Microsoft.Compute/virtualMachines/your-vm-name"
+$subscriptionId = "your-subscription-id"
+$resourceId = "/subscriptions/$subscriptionId/resourceGroups/your-resource-group/providers/Microsoft.Compute/virtualMachines/your-vm-name"
 $startDate = "2023-01-01"
 $endDate = "2023-06-30"
 $granularity = "Daily"
-
-#$resourceId = "/subscriptions/f3bd1cf9-6b3f-4fda-b3f9-83e9467674cf/resourcegroups/identity-northeurope-rg1/providers/microsoft.compute/disks/advm2_osdisk_1_c91c98fa47654f15a1c902db763ea453"
-#$resourceGroupId = "/subscriptions/f3bd1cf9-6b3f-4fda-b3f9-83e9467674cf/resourcegroups/identity-northeurope-rg1"
-$resourceId = "/subscriptions/3d426a17-f592-4e2c-b0ad-3742486b4c73/resourceGroups/anghasten-storage/providers/Microsoft.Storage/storageAccounts/brfang"
-$resourceGroupId = "/subscriptions/3d426a17-f592-4e2c-b0ad-3742486b4c73/resourceGroups/anghasten-storage"
-#$resourceGroupId = $resourceId.Split("/")[1,2];
-#$resourceGroupId = $resourceId.Substring(0,$string.IndexOf(","))
-#$resourceGroupId = $resourceId.Substring(0,4)
 
 $uri = "https://management.azure.com$resourceGroupId/providers/Microsoft.CostManagement/query?api-version=2023-03-01"
 $body = @{

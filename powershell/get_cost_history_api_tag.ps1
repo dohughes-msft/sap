@@ -1,11 +1,12 @@
 <#
 .SYNOPSIS
-    Take a collection of given resource IDs and return the cost history for those resources. For this we use the Microsoft.CostManagement provider
+    Take a tag and a collection of values and return the cost history for matching resources. For this we use the Microsoft.CostManagement provider
     of the resource group containing the resource.
-    Requires Az.CostManagement module
+    This script uses direct API calls. For PowerShell consider using the Az.CostManagement module (note! currently buggy)
 
 .PARAMETER ParameterName
-    $resourceID[] (mandatory) : The resource IDs of the resources to be examined
+    $tagName      (mandatory) : The name of the tag to be filtered on
+    $tagValues[]  (mandatory) : Values of the tag to be filtered on
     $startDate    (optional)  : The start date of the period to be examined (default is the first day of the month, 6 months ago)
     $endDate      (optional)  : The end date of the period to be examined (default is the last day of the previous month)
 
@@ -13,21 +14,20 @@
     None
 
 .OUTPUTS
-    A table showing the cost history of the given resource over the requested period
+    A table showing the cost history of resources matching the given tag name and values over the requested period
 
 .EXAMPLE
-    .\get_cost_history.ps1 -resourceId "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/xxxxxxxx/providers/microsoft.compute/disks/xxxxxxx"
-    .\get_cost_history.ps1 -resourceId @("Id1", "Id2", ...)
-    .\get_cost_history.ps1 -resourceId "/subscriptions/xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx/resourcegroups/xxxxxxxx/providers/microsoft.compute/disks/xxxxxxx" -startDate "2023-01-01" -endDate "2023-06-30"
+    .\get_cost_history.ps1 -tagName "Environment" -tagValues @("Dev", "Test")
+    .\get_cost_history.ps1 -tagName "Environment" -tagValues @("Dev", "Test") -startDate "2023-01-01" -endDate "2023-06-30"
 
 .NOTES
     Documentation links:
     https://learn.microsoft.com/en-us/rest/api/cost-management/query/usage
-    https://learn.microsoft.com/en-us/powershell/module/az.costmanagement/invoke-azcostmanagementquery
 #>
 
 param (
-    [Parameter(Mandatory=$true)][string[]]$resourceId,
+    [Parameter(Mandatory=$true)][string]$tagName,
+    [Parameter(Mandatory=$true)][string[]]$tagValues,
     [string]$startDate = (Get-Date).AddMonths(-6).ToString("yyyy-MM-01"),               # the first day of the month 6 months ago
     [string]$endDate = (Get-Date).AddDays(-1 * (Get-Date).Day).ToString("yyyy-MM-dd")   # the last day of the previous month
 )
@@ -114,34 +114,57 @@ $grouping = @(
 # Supported types are Sum, Average, Minimum, Maximum, Count, and Total.
 $aggregation = @{
     PreTaxCost = @{
-        type = "Sum"
+        function = "Sum"
         name = "PreTaxCost"
     }
 }
 
 # Filter
-# In this script we use dimension resource ID as a filter
-$dimensions = New-AzCostManagementQueryComparisonExpressionObject -Name 'ResourceId' -Value $resourceId -Operator 'In'
-$filter = New-AzCostManagementQueryFilterObject -Dimensions $dimensions
+# In this script we use the provided tag name and values as the filter
+$filter = @{
+    tags = @{
+        name = $tagName
+        operator = "In"
+        values = @($tagValues)
+    }
+}
 
-$queryResult = Invoke-AzCostManagementQuery `
-    -Scope $scope `
-    -Timeframe $timeframe `
-    -Type $type `
-    -DatasetFilter $filter `
-    -TimePeriodFrom $startDate `
-    -TimePeriodTo $endDate `
-    -DatasetGrouping $grouping `
-    -DatasetAggregation $aggregation `
-    -DatasetGranularity $granularity
-#    -Debug
+# Create the body of the request
+$body = @{
+    type = $type
+    timeframe = $timeframe
+    timePeriod = @{
+        from = $startDate
+        to = $endDate
+    }
+    dataset = @{
+        granularity = $granularity
+        grouping = $grouping
+        aggregation = $aggregation
+        filter = $filter
+    }
+} | ConvertTo-Json -Depth 10
+
+$uri = "https://management.azure.com$scope/providers/Microsoft.CostManagement/query?api-version=2023-03-01"
+
+# Get the access token for passing in the header
+$azContext = Get-AzContext
+$azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+$profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList ($azProfile)
+$token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
+$authHeader = @{
+   'Content-Type'='application/json'
+   'Authorization'='Bearer ' + $token.AccessToken
+}
+
+$queryResult = Invoke-RestMethod -Uri $uri -Method Post -Headers $authHeader -Body $body
 
 # Convert the query result into a table
 $table = @()
-for ($i = 0; $i -lt $queryResult.Row.Count; $i++) {
+for ($i = 0; $i -lt $queryResult.properties.rows.Count; $i++) {
     $row = [PSCustomObject]@{}
-    for ($j = 0; $j -lt $queryResult.Column.Count; $j++) {
-        $row | Add-Member -MemberType NoteProperty -Name $queryResult.Column.Name[$j] -Value $queryResult.Row[$i][$j]
+    for ($j = 0; $j -lt $queryResult.properties.columns.Count; $j++) {
+        $row | Add-Member -MemberType NoteProperty -Name $queryResult.properties.columns.name[$j] -Value $queryResult.properties.rows[$i][$j]
     }
     $table += $row
 }

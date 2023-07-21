@@ -14,7 +14,7 @@ resource "azurerm_subnet" "onprem-workload" {
   address_prefixes     = ["10.0.0.0/24"]
 }
 
-resource "azurerm_subnet" "bastion" {
+resource "azurerm_subnet" "onprem-bastion" {
   count = var.use_bastion ? 1 : 0
   name                 = "AzureBastionSubnet"
   resource_group_name  = azurerm_resource_group.onprem.name
@@ -28,7 +28,7 @@ resource "azurerm_network_security_group" "onprem" {
   resource_group_name = azurerm_resource_group.onprem.name
 }
 
-resource "azurerm_network_security_rule" "public" {
+resource "azurerm_network_security_rule" "onprem-public" {
   count                       = var.use_public_ip_address ? 1 : 0
   name                        = "AllowAdmin"
   priority                    = 100
@@ -48,7 +48,7 @@ resource "azurerm_subnet_network_security_group_association" "onprem-nsg-workloa
   network_security_group_id = azurerm_network_security_group.onprem.id
 }
 
-resource "azurerm_public_ip" "bastion" {
+resource "azurerm_public_ip" "onprem-bastion" {
   count = var.use_bastion ? 1 : 0
   name                = "AzureBastion-pip"
   location            = azurerm_resource_group.onprem.location
@@ -57,14 +57,14 @@ resource "azurerm_public_ip" "bastion" {
   sku                 = "Standard"
 }
 
-resource "azurerm_bastion_host" "default" {
+resource "azurerm_bastion_host" "onprem" {
   count = var.use_bastion ? 1 : 0
   name                = "onprem-bastion"
   location            = azurerm_resource_group.onprem.location
   resource_group_name = azurerm_resource_group.onprem.name
   ip_configuration {
     name                 = "onprem-bastion-configuration"
-    subnet_id            = azurerm_subnet.bastion[0].id
-    public_ip_address_id = azurerm_public_ip.bastion[0].id
+    subnet_id            = azurerm_subnet.onprem-bastion[0].id
+    public_ip_address_id = azurerm_public_ip.onprem-bastion[0].id
   }
 }

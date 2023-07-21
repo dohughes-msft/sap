@@ -8,10 +8,6 @@ variable "onprem_resource_group_name" {
   description = "Resource group name that will hold the simulated on-premises resources"
 }
 
-#variable "azure_resource_group_name" {
-#  type = string
-#}
-
 # Do not put this in .tfvars - provide it on the command line or export it as an
 # environment variable before starting Terraform
 # For example: 
@@ -36,7 +32,7 @@ variable "onprem_subnet_name" {
 
 variable "onprem_nsg_name" {
   type = string
-  description = "The name of the NSG"
+  description = "The name of the on-premises Network Security Group"
 }
 
 variable "hyperv_hostname" {
@@ -64,4 +60,38 @@ variable "use_public_ip_address" {
   type = bool
   default = true
   description = "True if a public IP address should be assigned to the on-premises Hyper-V host, otherwise false"
+}
+
+variable "azure_resource_group_name" {
+  type = string
+  description = "Resource group name that will hold the Azure resources"
+}
+
+variable "azure_vnet_name" {
+  type = string
+  description = "The name of the Azure virtual network"
+}
+
+variable "azure_subnet_name" {
+  type = string
+  description = "The name of the Azure subnet"
+}
+
+variable "azure_nsg_name" {
+  type = string
+  description = "The name of the Azure Network Security Group"
+}
+
+variable "recovery_vault_name" {
+  type = string
+  description = "Name of the Recovery Services Vault"
+}
+
+variable "storage_account_prefix" {
+  type = string
+  description = "A prefix for the name of the storage account for storing replicated VMs. Maximum length 16 characters. Randomly generated characters will be added to the end to ensure uniqueness"
+  validation {
+    condition     = length(var.storage_account_prefix) <= 16
+    error_message = "The length of the storage account prefix must be 16 characters or less"
+  }
 }

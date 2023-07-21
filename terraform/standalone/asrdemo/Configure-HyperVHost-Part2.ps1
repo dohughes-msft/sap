@@ -45,3 +45,9 @@ foreach ($vm in $vms) {
 # Start the VMs
 Write-Host "Starting virtual machines..."
 Get-VM | Start-VM
+
+# Download the site recovery installer for Hyper-V
+Write-Host "Downloading Hyper-V site recovery provider..."
+$hyperVInstaller = "https://aka.ms/downloaddra_ne"
+$tempDrive = "D:\AzureSiteRecoveryProvider.exe"
+Invoke-WebRequest $hyperVInstaller -OutFile $tempDrive

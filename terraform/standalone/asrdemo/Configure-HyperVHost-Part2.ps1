@@ -22,7 +22,7 @@ Expand-Archive -Path $azCopyZipfile -DestinationPath $azCopyLocation
 Get-ChildItem -Path $azCopyLocation -Recurse azcopy.exe | Move-Item -Destination $azCopyExe
 
 # Pull VM zip from blob storage
-$blob = "https://asrdemone.blob.core.windows.net/asrdemo/VMs.zip"
+$blob = "https://asrdemone.blob.core.windows.net/asrdemo/VMs.zip?sp=r&st=2023-07-21T12:31:17Z&se=2025-12-31T21:31:17Z&spr=https&sv=2022-11-02&sr=c&sig=lPhtEf2YjbZjH7NWs7K6hhoDLBxVKN9XeAreSBJqRj8%3D"
 & $azCopyExe copy $blob $zipFile
 
 # Unzip the files
@@ -35,3 +35,6 @@ foreach ($vm in $vms) {
     Write-Host "Importing VM with configuration file $vmIdFile"
     Import-VM -Path $vmIdFile
 }
+
+# Start the VMs
+Get-VM | Start-VM

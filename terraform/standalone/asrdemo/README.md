@@ -14,17 +14,27 @@ This environment consists of an Azure virtual machine running four Hyper-V guest
 The lab is based on deploying ASR agents on these machines, creating Recovery Services vault in Azure, and performing ASR failover.
 
 ## Setting up the environment
-1. Run "terraform apply" to set up the Azure infrastructure
-2. Log on to the virtual machine via Bastion or its public IP address, if chosen
-3. Start Windows PowerShell ISE on the VM and click New Script
-4. Copy the contents of script Configure-HyperVHost-Part1.ps1 from the repo to the PowerShell ISE window and run it
-5. The VM will perform some configuration and reboot
-6. After the restart, start PowerShell ISE again and repeat the procedure with script Configure-HyperVHost-Part2.ps1. This script imports the pre-installed Hyper-V guests from a storage account and will take some time.
-7. Once the script is complete, the environment is ready and you can start the Hyper-V VMs
+1. Run "terraform apply" to set up the Azure infrastructure.
+2. Log on to the virtual machine via Bastion or its public IP address, if chosen.
+3. Start Windows PowerShell and paste the following command:
+
+```
+Invoke-WebRequest https://raw.githubusercontent.com/dohughes-msft/sap/master/terraform/standalone/asrdemo/Configure-HyperVHost-Part1.ps1 | Invoke-Expression
+```
+
+4. The VM will perform some configuration and reboot.
+5. After the restart, start PowerShell again and run the final configuration script:
+
+```
+Invoke-WebRequest https://raw.githubusercontent.com/dohughes-msft/sap/master/terraform/standalone/asrdemo/Configure-HyperVHost-Part2.ps1 | Invoke-Expression
+```
+
+This script imports the pre-installed Hyper-V guests from a storage account and will take some time.
+6. Once the script is complete, the environment is ready and Hyper-V manager should show the running VMs.
 
 ## Credentials
-Windows guest VMs: Administrator / P4ssword!!!!
+Windows guest VMs: `Administrator / P4ssword!!!!`
 
-Ubuntu guest VM: administrator / P4ssword!!!!
+Ubuntu guest VM: `administrator / P4ssword!!!!`
 
-SQL administrator: sa / P4ssword!!!!
+SQL administrator: `sa / P4ssword!!!!`

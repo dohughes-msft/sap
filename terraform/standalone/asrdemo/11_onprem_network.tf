@@ -26,17 +26,21 @@ resource "azurerm_network_security_group" "onprem" {
   name                = var.onprem_nsg_name
   location            = azurerm_resource_group.onprem.location
   resource_group_name = azurerm_resource_group.onprem.name
-  security_rule {
-    name                       = "AllowAdmin"
-    priority                   = 100
-    direction                  = "Inbound"
-    access                     = "Allow"
-    protocol                   = "Tcp"
-    source_port_range          = "*"
-    destination_port_range     = "3389"
-    source_address_prefix      = var.admin_ip_address
-    destination_address_prefix = "*"
-  }
+}
+
+resource "azurerm_network_security_rule" "public" {
+  count                       = var.use_public_ip_address ? 1 : 0
+  name                        = "AllowAdmin"
+  priority                    = 100
+  direction                   = "Inbound"
+  access                      = "Allow"
+  protocol                    = "Tcp"
+  source_port_range           = "*"
+  destination_port_range      = "3389"
+  source_address_prefix       = var.admin_ip_address
+  destination_address_prefix  = "*"
+  resource_group_name         = azurerm_resource_group.onprem.name
+  network_security_group_name = azurerm_network_security_group.onprem.name
 }
 
 resource "azurerm_subnet_network_security_group_association" "onprem-nsg-workload-subnet" {

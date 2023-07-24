@@ -72,6 +72,11 @@ variable "azure_vnet_name" {
   description = "The name of the Azure virtual network"
 }
 
+variable "azure_test_vnet_name" {
+  type = string
+  description = "The name of the Azure virtual network used for failover testing"
+}
+
 variable "azure_subnet_name" {
   type = string
   description = "The name of the Azure subnet"
@@ -94,4 +99,9 @@ variable "storage_account_prefix" {
     condition     = length(var.storage_account_prefix) <= 16
     error_message = "The length of the storage account prefix must be 16 characters or less"
   }
+}
+
+variable "failover_public_ip_count" {
+  type = number
+  description = "Number of public IP addresses to create for failover testing"
 }

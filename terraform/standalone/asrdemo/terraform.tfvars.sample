@@ -1,5 +1,5 @@
 # Global variables
-location = "northeurope"
+location = "swedencentral"
 use_bastion = false
 use_public_ip_address = true
 admin_ip_address = "167.220.0.0/16"

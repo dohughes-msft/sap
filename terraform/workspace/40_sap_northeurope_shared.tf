@@ -29,3 +29,11 @@ resource "azurerm_storage_share" "sapnebackup-sapbackup" {
   storage_account_name = azurerm_storage_account.sapnebackup.name
   quota                = 1000
 }
+
+resource "azurerm_recovery_services_vault" "northeurope" {
+  name                = "northeurope-vault"
+  location            = azurerm_resource_group.sap-northeurope-shared.location
+  resource_group_name = azurerm_resource_group.sap-northeurope-shared.name
+  sku                 = "Standard"
+  soft_delete_enabled = true
+}

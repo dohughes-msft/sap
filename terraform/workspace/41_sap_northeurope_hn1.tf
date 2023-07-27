@@ -17,6 +17,7 @@ module "sap-ne-hn1-dbserver" {
   admin_password = var.admin_password
 }
 
+/*
 module "sap-ne-hn1-ascsserver" {
   source = "../modules/sap/ascsserver"
   location = azurerm_resource_group.sap-northeurope-hn1.location
@@ -44,3 +45,4 @@ module "sap-ne-hn1-appserver" {
   admin_user = "adminuser"
   admin_password = var.admin_password
 }
+*/

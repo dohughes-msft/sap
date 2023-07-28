@@ -16,7 +16,7 @@ param ([Parameter(Mandatory=$true)] $Log, $Type="file", $Output, $DcrImmutableId
 # Information needed to authenticate to Azure Active Directory and obtain a bearer token
 $tenantId = "16b3c013-d300-468d-ac64-7eda0820b6d3"; #the tenant ID in which the Data Collection Endpoint resides
 $appId = "03b001a0-0a5e-4d87-a379-5a0657ab3db4"; #the app ID created and granted permissions
-$appSecret = "_ku8Q~na27XAXO1f8V2zoQIHr82zh_nploItHduj"; #the secret created for the above app - never store your secrets in the source code
+#$appSecret = "<secret>"; #the secret created for the above app - never store your secrets in the source code
 ##### >>>> END <<<<<
 
 

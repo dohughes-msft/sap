@@ -58,6 +58,7 @@ Invoke-WebRequest https://raw.githubusercontent.com/dohughes-msft/sap/master/ter
 ```
 
 This script imports the pre-installed Hyper-V guests from a storage account and will take some time.
+
 9. Once the script is complete, the environment is ready and Hyper-V manager should show the running VMs.
 
 ## Credentials

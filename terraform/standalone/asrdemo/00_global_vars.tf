@@ -20,6 +20,11 @@ variable "admin_password" {
   description = "The administrator password for the on-premises Hyper-V host"
 }
 
+variable "group_label" {
+  type = string
+  description = "A unique label so this lab can be run in parallel"
+}
+
 variable "onprem_vnet_name" {
   type = string
   description = "The name of the on-premises virtual network"

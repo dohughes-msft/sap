@@ -8,7 +8,7 @@ variable "onprem_resource_group_name" {
   description = "Resource group name that will hold the simulated on-premises resources"
 }
 
-variable "admin_user" {
+variable "admin_username" {
   type = string
   description = "The administrator username for the on-premises Hyper-V host"
 }

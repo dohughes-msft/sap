@@ -2,8 +2,9 @@
 location = "swedencentral"
 use_bastion = true
 use_public_ip_address = false
-admin_ip_address = "167.220.0.0/16"
+admin_user = "adminuser"
 #admin_password = "P4ssword!!!!"
+admin_ip_address = "167.220.0.0/16"
 group_label = "group1"
 
 # Variables describing the simulated on-premises environment

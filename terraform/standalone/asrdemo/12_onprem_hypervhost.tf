@@ -28,7 +28,7 @@ resource "azurerm_windows_virtual_machine" "default" {
   resource_group_name             = azurerm_resource_group.onprem.name
   location                        = azurerm_resource_group.onprem.location
   size                            = var.hyperv_host_size
-  admin_username                  = "adminuser"
+  admin_username                  = var.admin_username
   admin_password                  = var.admin_password
   identity {
     type = "SystemAssigned"

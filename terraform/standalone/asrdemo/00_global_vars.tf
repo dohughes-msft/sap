@@ -8,6 +8,11 @@ variable "onprem_resource_group_name" {
   description = "Resource group name that will hold the simulated on-premises resources"
 }
 
+variable "admin_username" {
+  type = string
+  description = "The administrator username for the on-premises Hyper-V host"
+}
+
 # Do not put this in .tfvars - provide it on the command line or export it as an
 # environment variable before starting Terraform
 # For example: 
@@ -18,6 +23,16 @@ variable "admin_password" {
   type = string
   sensitive = true
   description = "The administrator password for the on-premises Hyper-V host"
+}
+
+variable "admin_ip_address" {
+  type = string
+  description = "The IP address or range from which access to the on-premises Hyper-V host is allowed, if not using Bastion"
+}
+
+variable "group_label" {
+  type = string
+  description = "A unique label so this lab can be run in parallel"
 }
 
 variable "onprem_vnet_name" {
@@ -43,11 +58,6 @@ variable "hyperv_hostname" {
 variable "hyperv_host_size" {
   type = string
   description = "The size (Azure SKU) of the on-premises Hyper-V host"
-}
-
-variable "admin_ip_address" {
-  type = string
-  description = "The IP address or range from which access to the on-premises Hyper-V host is allowed, if not using Bastion"
 }
 
 variable "use_bastion" {

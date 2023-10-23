@@ -2,7 +2,7 @@
 .SYNOPSIS
     Take a tag and a collection of values and return the cost history for matching resources. For this we use the Microsoft.CostManagement provider
     of the resource group containing the resource.
-    This script uses direct API calls. For PowerShell consider using the Az.CostManagement module (note! currently buggy)
+    Requires Az.CostManagement module
 
 .PARAMETER ParameterName
     $tagName      (mandatory) : The name of the tag to be filtered on
@@ -119,34 +119,6 @@ $aggregation = @{
     }
 }
 
-# Filter
-# In this script we use the provided tag name and values as the filter
-$filter = @{
-    tags = @{
-        name = $tagName
-        operator = "In"
-        values = @($tagValues)
-    }
-}
-
-# Create the body of the request
-$body = @{
-    type = $type
-    timeframe = $timeframe
-    timePeriod = @{
-        from = $startDate
-        to = $endDate
-    }
-    dataset = @{
-        granularity = $granularity
-        grouping = $grouping
-        aggregation = $aggregation
-        filter = $filter
-    }
-} | ConvertTo-Json -Depth 10
-
-$uri = "https://management.azure.com$scope/providers/Microsoft.CostManagement/query?api-version=2023-03-01"
-
 # Get the access token for passing in the header
 $azContext = Get-AzContext
 $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
@@ -157,10 +129,22 @@ $authHeader = @{
    'Authorization'='Bearer ' + $token.AccessToken
 }
 
-$queryResult = Invoke-RestMethod -Uri $uri -Method Post -Headers $authHeader -Body $body
+# Filter
+# In this script we use the provided tag as a filter
+$tags = New-AzCostManagementQueryComparisonExpressionObject -Name $tagName -Value $tagValues -Operator 'In'
+$filter = New-AzCostManagementQueryFilterObject -Tag $tags
 
-$body
-$queryResult
+$queryResult = Invoke-AzCostManagementQuery `
+    -Scope $scope `
+    -Timeframe $timeframe `
+    -Type $type `
+    -DatasetFilter $filter `
+    -TimePeriodFrom $startDate `
+    -TimePeriodTo $endDate `
+    -DatasetGrouping $grouping `
+    -DatasetAggregation $aggregation `
+    -DatasetGranularity $granularity `
+    -Debug
 
 # Convert the query result into a table
 $table = @()

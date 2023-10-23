@@ -60,7 +60,7 @@ Invoice section scope    : /providers/Microsoft.Billing/billingAccounts/{billing
 Partner scope            : /providers/Microsoft.Billing/billingAccounts/{billingAccountId}/customers/{customerId}
 
 For a customer with a Microsoft Enterprise Agreement or Microsoft Customer Agreement, billing account scope is recommended. #>
-$scope = "/subscriptions/628b6cdb-10b6-4463-a581-04a2c18505fd"
+$scope = "/subscriptions/f3bd1cf9-6b3f-4fda-b3f9-83e9467674cf"
 
 # For testing purposes the resource group of the first resource ID could be used.
 #$scope = ""
@@ -133,8 +133,8 @@ $queryResult = Invoke-AzCostManagementQuery `
     -TimePeriodTo $endDate `
     -DatasetGrouping $grouping `
     -DatasetAggregation $aggregation `
-    -DatasetGranularity $granularity
-#    -Debug
+    -DatasetGranularity $granularity `
+    -Debug
 
 # Convert the query result into a table
 $table = @()

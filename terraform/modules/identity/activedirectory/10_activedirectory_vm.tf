@@ -28,6 +28,9 @@ resource "azurerm_windows_virtual_machine" "main" {
   size                            = var.vm_size
   admin_username                  = var.admin_user
   admin_password                  = var.admin_password
+  patch_assessment_mode           = "AutomaticByPlatform"
+  patch_mode                      = "AutomaticByPlatform"
+  bypass_platform_safety_checks_on_user_schedule_enabled = true
   identity {
     type = "SystemAssigned"
   }

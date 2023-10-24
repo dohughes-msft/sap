@@ -7,9 +7,8 @@ param (
     $storageAccKey
 )
 
-$containerName = 'tfstate'
-$subscriptionid = 'f3bd1cf9-6b3f-4fda-b3f9-83e9467674cf'
-$storageAccName = 'tfstatene'
+$containerName = 'lcmtest1'
+$storageAccName = 'stglcmtestsc1'
 
 # Create a context object using storage account name and key
 $ctx = New-AzStorageContext -StorageAccountName $storageAccName -StorageAccountKey $storageAccKey
@@ -28,3 +27,4 @@ foreach ($blob in $blobs) {
         LastAccessed = $properties.Value.LastAccessed
     }
 }
+$table | Format-Table

@@ -26,10 +26,7 @@ Get-ChildItem -Path $azCopyLocation -Recurse azcopy.exe | Move-Item -Destination
 
 # Pull VM zip from blob storage
 Write-Host "Fetching VM images from storage..."
-# North Europe
-#$blob = "https://asrdemone.blob.core.windows.net/asrdemo/VMs.zip?sp=r&st=2023-07-21T12:31:17Z&se=2025-12-31T21:31:17Z&spr=https&sv=2022-11-02&sr=c&sig=lPhtEf2YjbZjH7NWs7K6hhoDLBxVKN9XeAreSBJqRj8%3D"
-# Sweden Central
-$blob = "https://asrdemosc.blob.core.windows.net/asrdemo/VMs.zip?sp=r&st=2023-07-25T14:07:45Z&se=2030-12-30T23:07:45Z&spr=https&sv=2022-11-02&sr=c&sig=726GQkNqpEotQ1h6QNVAMG9b%2BlTmEUJTx1kYEV%2BnBY0%3D"
+$blob = "https://asrdemosrc.blob.core.windows.net/asrdemo/VMs.zip?sv=2022-11-02&ss=b&srt=o&sp=r&se=2023-10-24T23:38:42Z&st=2023-10-24T15:38:42Z&spr=https&sig=9bZwqxYRVmOo%2B68gg2KbBIl4HJTcBHzDo82G3tVes2s%3D"
 & $azCopyExe copy $blob $zipFile
 
 # Unzip the files

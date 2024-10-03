@@ -1,0 +1,3 @@
+# Global variables
+location = "swedencentral"
+vpn_shared_key = "<a very long shared key>"

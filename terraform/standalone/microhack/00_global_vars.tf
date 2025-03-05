@@ -5,7 +5,7 @@ variable "location" {
 
 variable "admin_username" {
   type = string
-  description = "The administrator username for the on-premises Hyper-V host"
+  description = "The administrator username for virtual machines"
 }
 
 # Do not put this in .tfvars - provide it on the command line or export it as an
@@ -17,7 +17,7 @@ variable "admin_username" {
 variable "admin_password" {
   type = string
   sensitive = true
-  description = "The administrator password for the on-premises Hyper-V host"
+  description = "The administrator password for virtual machines"
 }
 
 variable "global_label" {
